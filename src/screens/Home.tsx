@@ -359,9 +359,9 @@ function GenreDeck() {
           const p = ps[i % ps.length]
           return (
             <button key={g} onClick={() => nav.go({ name: 'explore', tab: 'cartelera', genre: g })} className="group relative w-[150px] shrink-0 overflow-hidden rounded-md text-left md:w-auto">
-              <Photo id={p.photos?.[1] ?? p.photos?.[0]} alt="" w={500} grade="mono" className="aspect-[4/5]" fallback={<div className="absolute inset-0" style={{ background: c.bg }} />}>
-                <div className="absolute inset-0 mix-blend-multiply transition-opacity group-hover:opacity-70" style={{ background: c.bg === '#F5F0E6' ? '#8A8073' : c.bg }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <Photo id={p.photos?.[0]} alt="" w={500} className="aspect-[4/5]" imgClassName="transition-transform duration-500 group-hover:scale-105" fallback={<div className="absolute inset-0" style={{ background: c.bg }} />}>
+                <div className="absolute inset-x-0 top-0 h-1.5" style={{ background: c.bg === '#F5F0E6' ? '#191919' : c.bg }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-3 text-papel">
                   <div className="font-display text-[26px] uppercase leading-none">{g}</div>
                   <div className="mt-1 text-[12px] font-semibold text-papel/85">
