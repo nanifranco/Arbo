@@ -5,7 +5,7 @@
  * Para conectar una base de datos real basta con reemplazar las funciones de este archivo
  * (o convertirlas en consultas asíncronas) sin tocar los componentes.
  */
-import { communityReviews, communityUsers, people, productions, venues, works } from '../data/demo'
+import { communityRatings, communityReviews, communityUsers, people, productions, venues, works } from '../data/demo'
 import type { CommunityReview, Genre, Production, Season, Venue } from '../data/types'
 
 // ——— Fechas ———
@@ -135,36 +135,29 @@ export function reviewsFor(productionId: string): CommunityReview[] {
   return communityReviews.filter((r) => r.productionId === productionId).sort((a, b) => b.date.localeCompare(a.date))
 }
 
-/** Calificación promedio de la comunidad (incluye la del usuario si existe) */
-export function ratingStats(productionId: string, own: number[] = []) {
-  const ratings = [...reviewsFor(productionId).map((r) => r.rating), ...own]
-  // Base de calificaciones de demostración adicionales para que el histograma no se vea vacío
-  const seed = demoRatingBase[productionId] ?? []
-  const all = [...ratings, ...seed]
-  const count = all.length
-  const avg = count ? all.reduce((a, b) => a + b, 0) / count : 0
-  const dist = [1, 2, 3, 4, 5].map((star) => all.filter((r) => Math.ceil(r) === star).length)
-  return { avg, count, dist }
+/** Mínimo de calificaciones para publicar un promedio (PRD §4b). Por debajo se muestran las individuales. */
+export const RATING_THRESHOLD = 10
+
+export interface RatingStats {
+  /** null mientras no se alcance el umbral */
+  avg: number | null
+  count: number
+  dist: number[]
+  ratings: number[]
 }
 
-const demoRatingBase: Record<string, number[]> = {
-  trolebus: [4, 4.5, 5, 3.5, 4, 4, 3, 4.5, 5, 4],
-  jacaranda: [4, 4, 3.5, 5, 4.5, 3, 4, 4],
-  azotea: [4, 3.5, 4, 4.5, 3],
-  sonambulos: [3, 4, 3.5, 4.5, 3, 4],
-  'medea-barrio': [5, 4.5, 5, 4, 5, 4.5, 4, 5, 3.5],
-  programa: [4.5, 5, 4, 4.5],
-  cartografia: [5, 4.5, 4.5, 4],
-  loteria: [4.5, 5, 4, 4],
-  charol: [4, 3.5, 4.5, 4, 3, 4],
-  'casa-dos-puertas': [4, 3.5, 4, 4.5],
-  'fuera-de-cuadro': [4.5, 5, 4, 4.5, 5],
-  mudanzas: [],
+/** Calificaciones de la comunidad (reseñas + calificaciones sin texto + la del usuario, si existe) */
+export function ratingStats(productionId: string, own: number[] = []): RatingStats {
+  const all = [...reviewsFor(productionId).map((r) => r.rating), ...(communityRatings[productionId] ?? []), ...own]
+  const count = all.length
+  const avg = count >= RATING_THRESHOLD ? all.reduce((a, b) => a + b, 0) / count : null
+  const dist = [1, 2, 3, 4, 5].map((star) => all.filter((r) => Math.ceil(r) === star).length)
+  return { avg, count, dist, ratings: all }
 }
 
 export function popularity(productionId: string) {
   const reviews = reviewsFor(productionId)
-  return reviews.length * 10 + reviews.reduce((a, r) => a + r.likes, 0) / 5 + (demoRatingBase[productionId]?.length ?? 0) * 2
+  return reviews.length * 10 + reviews.reduce((a, r) => a + r.likes, 0) / 5 + (communityRatings[productionId]?.length ?? 0) * 2
 }
 
 // ——— Relaciones ———

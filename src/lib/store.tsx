@@ -6,7 +6,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { demoDiarySeed, demoFollowsSeed, demoWatchlistSeed } from '../data/demo'
-import type { DiaryEntry, UserProfile } from '../data/types'
+import type { DiaryEntry, UserList, UserProfile, WorkSuggestion } from '../data/types'
 
 interface State {
   user: UserProfile | null
@@ -15,9 +15,11 @@ interface State {
   favorites: string[]
   follows: string[]
   likes: string[]
+  lists: UserList[]
+  suggestions: WorkSuggestion[]
 }
 
-const EMPTY: State = { user: null, diary: [], watchlist: [], favorites: [], follows: [], likes: [] }
+const EMPTY: State = { user: null, diary: [], watchlist: [], favorites: [], follows: [], likes: [], lists: [], suggestions: [] }
 const KEY = 'arbo.prototipo.v1'
 
 function load(): State {
@@ -50,6 +52,11 @@ interface Store extends State {
   toggleFollow: (userId: string) => boolean
   toggleLike: (reviewId: string) => void
   isSeen: (productionId: string) => boolean
+  createList: (name: string, description: string, productionIds?: string[]) => UserList
+  updateList: (id: string, patch: Partial<Pick<UserList, 'name' | 'description'>>) => void
+  deleteList: (id: string) => void
+  toggleInList: (listId: string, productionId: string) => boolean
+  suggestWork: (s: Omit<WorkSuggestion, 'id' | 'status' | 'createdAt'>) => void
   entriesFor: (productionId: string) => DiaryEntry[]
   toast: Toast | null
   notify: (text: string, tone?: Toast['tone']) => void
@@ -102,6 +109,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         watchlist: demoWatchlistSeed,
         follows: demoFollowsSeed,
         likes: [],
+        lists: [
+          {
+            id: uid(),
+            name: 'Para llevar a mi mamá',
+            description: 'Obras que creo que le van a encantar.',
+            productionIds: ['jacaranda', 'azotea', 'loteria'],
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        suggestions: [],
       }),
     logout: () => setState(EMPTY),
     updateProfile: (p) => setState((s) => (s.user ? { ...s, user: { ...s.user, ...p } } : s)),
@@ -120,6 +137,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     toggleFavorite: (pid) => toggleIn('favorites', pid),
     toggleFollow: (id) => toggleIn('follows', id),
     toggleLike: (id) => void toggleIn('likes', id),
+    createList: (name, description, productionIds = []) => {
+      const list: UserList = { id: uid(), name, description, productionIds, createdAt: new Date().toISOString() }
+      setState((s) => ({ ...s, lists: [list, ...s.lists] }))
+      return list
+    },
+    updateList: (id, patch) => setState((s) => ({ ...s, lists: s.lists.map((l) => (l.id === id ? { ...l, ...patch } : l)) })),
+    deleteList: (id) => setState((s) => ({ ...s, lists: s.lists.filter((l) => l.id !== id) })),
+    toggleInList: (listId, pid) => {
+      const has = state.lists.find((l) => l.id === listId)?.productionIds.includes(pid) ?? false
+      setState((s) => ({
+        ...s,
+        lists: s.lists.map((l) => (l.id === listId ? { ...l, productionIds: has ? l.productionIds.filter((x) => x !== pid) : [...l.productionIds, pid] } : l)),
+      }))
+      return !has
+    },
+    suggestWork: (sug) =>
+      setState((s) => ({ ...s, suggestions: [{ ...sug, id: uid(), status: 'En revisión', createdAt: new Date().toISOString() }, ...s.suggestions] })),
     isSeen: (pid) => state.diary.some((d) => d.productionId === pid),
     entriesFor: (pid) => state.diary.filter((d) => d.productionId === pid).sort((a, b) => b.date.localeCompare(a.date)),
   }
@@ -147,6 +181,8 @@ export type Route =
   | { name: 'map' }
   | { name: 'watchlist' }
   | { name: 'community' }
+  | { name: 'list'; id: string }
+  | { name: 'suggest'; title?: string }
 
 export type Tab = 'home' | 'explore' | 'diary' | 'community' | 'profile'
 

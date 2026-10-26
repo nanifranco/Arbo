@@ -18,7 +18,7 @@ import { useNav } from '../lib/store'
 import type { Production } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { Avatar, Button, Chip, DemoBadge, EmptyState, Sheet, Stars, StatusPill } from '../components/ui'
+import { Avatar, Button, Chip, CommunityScore, DemoBadge, EmptyState, Sheet, StatusPill } from '../components/ui'
 
 type DateFilter = 'any' | 'today' | 'weekend' | 'week'
 type TimeFilter = 'any' | 'matine' | 'tarde' | 'noche'
@@ -86,11 +86,11 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
           if (!slots.some((s) => timeOk(s.time, f.time))) return false
         }
       }
-      if (f.minRating && ratingStats(p.id).avg < f.minRating) return false
+      if (f.minRating && (ratingStats(p.id).avg ?? 0) < f.minRating) return false
       return true
     })
     out = [...out].sort((a, b) => {
-      if (f.sort === 'rating') return ratingStats(b.id).avg - ratingStats(a.id).avg
+      if (f.sort === 'rating') return (ratingStats(b.id).avg ?? -1) - (ratingStats(a.id).avg ?? -1)
       if (f.sort === 'closing') return currentSeason(a).season.end.localeCompare(currentSeason(b).season.end)
       if (f.sort === 'az') return a.title.localeCompare(b.title, 'es')
       return popularity(b.id) - popularity(a.id)
@@ -148,9 +148,14 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
 
       {searching ? (
         nothingFound ? (
-          <EmptyState icon="search" title="Sin resultados" text={`No encontramos nada para “${q}”. Prueba con el nombre de una colonia, un género como “comedia” o el apellido de una actriz.`} action="Borrar búsqueda" onAction={() => setQ('')} />
+          <EmptyState icon="search" title="Sin resultados" text={`No encontramos nada para “${q}”. Prueba con el nombre de una colonia, un género como “comedia” o el apellido de una actriz.`} action="Sugerir esta obra" onAction={() => nav.go({ name: 'suggest', title: q.trim() })} />
         ) : (
-          <SearchResults r={results} />
+          <>
+            <SearchResults r={results} />
+            <button onClick={() => nav.go({ name: 'suggest', title: q.trim() })} className="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-rojo hover:underline">
+              <Icon name="plus" size={16} /> ¿No está la que buscas? Sugerir una obra
+            </button>
+          </>
         )
       ) : tab === 'teatros' ? (
         <VenueList />
@@ -316,7 +321,7 @@ function ResultCard({ p }: { p: Production }) {
         {v?.name} · {v?.neighborhood}
       </div>
       <div className="mt-1 flex items-center gap-2">
-        {r.count > 0 ? <Stars value={r.avg} size={12} /> : <span className="text-xs text-gris">Sin calificaciones</span>}
+        <CommunityScore stats={r} size={12} compact />
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[11px] text-grafito">
         {status === 'archivo' ? <span>{fmt.range(season.start, season.end)}</span> : <span>{fmt.price(season.priceFrom, season.priceTo)}</span>}

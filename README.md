@@ -14,6 +14,17 @@ npm run build    # genera dist/index.html autocontenido
 
 Stack: React 18 + TypeScript + Tailwind CSS 4 + Vite.
 
+## Publicación (GitHub Pages)
+
+`.github/workflows/pages.yml` compila y publica el sitio en cada push a `main`. Requiere activar una sola vez **Settings → Pages → Source: GitHub Actions**.
+
+## Reglas del PRD ya reflejadas
+
+- **Umbral de calificación:** el promedio solo se publica con 10 calificaciones o más (`RATING_THRESHOLD` en `lib/catalog.ts`); por debajo se muestran las individuales.
+- **Sugerir obra:** formulario con detección de títulos parecidos mientras se escribe; la solicitud queda “En revisión”.
+- **Listas propias** además de Por ver y Favoritas.
+- **Registro con ciudad o país** opcional, para obras vistas fuera de la CDMX.
+
 ## Estructura
 
 ```

@@ -3,7 +3,7 @@ import { allCommunityReviews, allCommunityUsers, allProductions, currentSeason, 
 import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { Avatar, Button, DemoBadge, EmptyState, SectionTitle, Stars } from '../components/ui'
+import { Avatar, Button, CommunityScore, DemoBadge, EmptyState, SectionTitle } from '../components/ui'
 import { ReviewCard } from './ProductionDetail'
 
 type Tab = 'siguiendo' | 'populares' | 'personas'
@@ -153,7 +153,7 @@ function Popular() {
                 </span>
                 <span className="mt-1.5 block truncate text-xs font-bold">{p.title}</span>
                 <span className="block">
-                  <Stars value={ratingStats(p.id).avg} size={10} />
+                  <CommunityScore stats={ratingStats(p.id)} size={10} compact />
                 </span>
               </button>
             </li>

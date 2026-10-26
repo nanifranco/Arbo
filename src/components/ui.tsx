@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { currentSeason, getVenue, STATUS_LABEL, type Status } from '../lib/catalog'
+import { currentSeason, getVenue, RATING_THRESHOLD, STATUS_LABEL, type RatingStats, type Status } from '../lib/catalog'
 import { useNav, useStore } from '../lib/store'
 import type { Production } from '../data/types'
 import { BrandAsterisk, HandStar, Icon, type IconName } from './Icon'
@@ -58,6 +58,23 @@ export function Stars({ value, size = 14, showNumber = false }: { value: number;
         )
       })}
       {showNumber && <span className="ml-1 font-mono text-xs font-bold tabular">{value.toFixed(1)}</span>}
+    </span>
+  )
+}
+
+/** Calificación de la comunidad respetando el umbral: sin promedio hasta tener suficientes calificaciones */
+export function CommunityScore({ stats, size = 12, compact = false }: { stats: RatingStats; size?: number; compact?: boolean }) {
+  if (stats.avg !== null)
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Stars value={stats.avg} size={size} />
+        {!compact && <span className="text-xs text-gris tabular">{stats.count} calificaciones</span>}
+      </span>
+    )
+  if (stats.count === 0) return <span className="text-xs text-gris">Sin calificaciones</span>
+  return (
+    <span className="text-xs text-gris tabular" title={`El promedio se publica a partir de ${RATING_THRESHOLD} calificaciones`}>
+      {compact ? `${stats.count}/${RATING_THRESHOLD} calif.` : `${stats.count} de ${RATING_THRESHOLD} calificaciones para promedio`}
     </span>
   )
 }

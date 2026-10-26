@@ -625,6 +625,24 @@ export const communityReviews: CommunityReview[] = [
   { id: 'r14', userId: 'u-ximena', productionId: 'cartografia', rating: 4.5, date: '2026-10-09', likes: 40, text: 'Teatro documental hecho con muchísimo cuidado. Sesenta personas y un mapa: no hace falta más.' },
 ]
 
+/**
+ * Calificaciones de demostración sin reseña escrita (personas ficticias). Algunas producciones
+ * superan el umbral de 10 calificaciones y muestran promedio; otras todavía no.
+ */
+export const communityRatings: Record<string, number[]> = {
+  trolebus: [4, 4.5, 5, 3.5, 4, 4, 3, 4.5, 5, 4],
+  jacaranda: [4, 4, 3.5, 5, 4.5, 3, 4, 4, 4.5, 3.5],
+  azotea: [4, 3.5, 4, 4.5, 3],
+  sonambulos: [3, 4, 3.5, 4.5, 3, 4],
+  'medea-barrio': [5, 4.5, 5, 4, 5, 4.5, 4, 5, 3.5],
+  programa: [4.5, 5, 4, 4.5],
+  cartografia: [5, 4.5, 4.5, 4],
+  loteria: [4.5, 5, 4, 4],
+  charol: [4, 3.5, 4.5, 4, 3, 4, 4.5, 3.5, 4, 5],
+  'casa-dos-puertas': [4, 3.5, 4, 4.5],
+  'fuera-de-cuadro': [4.5, 5, 4, 4.5, 5, 4, 4.5, 5, 4.5],
+}
+
 /** Entradas con las que se llena el diario al entrar con el perfil de demostración */
 export const demoDiarySeed = [
   { productionId: 'medea-barrio', seasonId: 'medea-2026', date: '2026-10-17', rating: 4.5, favorite: true, review: 'El coro de vecinas me persiguió toda la semana. Quiero volver a verla desde la primera fila.' },

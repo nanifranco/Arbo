@@ -2,7 +2,7 @@ import { allCommunityReviews, allProductions, allVenues, currentSeason, fmt, get
 import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { Avatar, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
+import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
 export function Home() {
   const nav = useNav()
@@ -105,7 +105,7 @@ export function Home() {
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-bold">{p.title}</span>
                       <span className="flex items-center gap-2 text-xs text-gris">
-                        <Stars value={r.avg} size={12} /> <span className="tabular">{r.count} calificaciones</span>
+                        <CommunityScore stats={r} size={12} />
                       </span>
                     </span>
                     <span className="hidden sm:block">

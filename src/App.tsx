@@ -10,6 +10,8 @@ import { LogEntry } from './screens/LogEntry'
 import { Profile, Watchlist } from './screens/Profile'
 import { ArtistProfile, TheaterMap, VenueProfile } from './screens/Places'
 import { Community } from './screens/Community'
+import { ListDetail } from './screens/Lists'
+import { Suggest } from './screens/Suggest'
 
 const TABS: { tab: Tab; label: string; icon: IconName }[] = [
   { tab: 'home', label: 'Inicio', icon: 'home' },
@@ -43,6 +45,10 @@ function Screen({ route }: { route: Route }) {
       return <Watchlist />
     case 'community':
       return <Community />
+    case 'list':
+      return <ListDetail id={route.id} />
+    case 'suggest':
+      return <Suggest initialTitle={route.title} />
   }
 }
 

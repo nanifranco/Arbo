@@ -25,6 +25,7 @@ export function LogEntry({ productionId, entryId }: { productionId?: string; ent
 }
 
 function PickProduction({ onPick }: { onPick: (id: string) => void }) {
+  const nav = useNav()
   const [q, setQ] = useState('')
   const list = useMemo(() => (q.trim() ? searchAll(q).productions : allProductions().filter((p) => currentSeason(p).status !== 'proximamente')), [q])
   return (
@@ -41,7 +42,7 @@ function PickProduction({ onPick }: { onPick: (id: string) => void }) {
       </div>
       {list.length === 0 ? (
         <div className="mt-6">
-          <EmptyState icon="search" title="No está en el catálogo" text="En la versión real podrás proponer una obra que falte para que el equipo la agregue al archivo." />
+          <EmptyState icon="search" title="No está en el catálogo" text="Sugiérela y, cuando el equipo la publique, podrás registrarla en tu diario." action="Sugerir esta obra" onAction={() => nav.go({ name: 'suggest', title: q.trim() })} />
         </div>
       ) : (
         <ul className="mt-4 flex flex-col divide-y divide-linea rounded-xl border border-linea bg-papel">
@@ -63,6 +64,11 @@ function PickProduction({ onPick }: { onPick: (id: string) => void }) {
             )
           })}
         </ul>
+      )}
+      {list.length > 0 && (
+        <button onClick={() => nav.go({ name: 'suggest', title: q.trim() })} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-rojo hover:underline">
+          <Icon name="plus" size={16} /> ¿No aparece? Sugerir una obra
+        </button>
       )}
     </div>
   )
@@ -86,6 +92,7 @@ function Form({ productionId, entryId, onChangeProduction }: { productionId: str
   const [rating, setRating] = useState(existing?.rating ?? 0)
   const [review, setReview] = useState(existing?.review ?? '')
   const [spoiler, setSpoiler] = useState(existing?.spoiler ?? false)
+  const [place, setPlace] = useState(existing?.place ?? '')
   const [fav, setFav] = useState(store.favorites.includes(p.id))
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -113,7 +120,7 @@ function Form({ productionId, entryId, onChangeProduction }: { productionId: str
     if (review.length > MAX) errs.review = `La reseña tiene ${review.length} caracteres; el máximo es ${MAX}.`
     setErrors(errs)
     if (Object.keys(errs).length) return
-    store.saveEntry({ id: entryId, productionId: p.id, seasonId: seasonId || undefined, date, rating: rating || undefined, review: review.trim() || undefined, spoiler: spoiler || undefined })
+    store.saveEntry({ id: entryId, productionId: p.id, seasonId: seasonId || undefined, date, rating: rating || undefined, review: review.trim() || undefined, spoiler: spoiler || undefined, place: place.trim() || undefined })
     if (fav !== store.favorites.includes(p.id)) store.toggleFavorite(p.id)
     store.notify(entryId ? 'Entrada actualizada' : 'Guardada en tu diario')
     nav.back()
@@ -153,6 +160,10 @@ function Form({ productionId, entryId, onChangeProduction }: { productionId: str
             <input id="log-date" type="date" value={date} max={toISO(TODAY)} onChange={(e) => setDate(e.target.value)} className={`${inputCls} font-mono`} aria-invalid={!!errors.date} />
           </Field>
         </div>
+
+        <Field label="Ciudad o país" htmlFor="log-place" hint="Opcional. Útil si la viste de gira o fuera de la Ciudad de México.">
+          <input id="log-place" className={inputCls} value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Ciudad de México" maxLength={60} />
+        </Field>
 
         <div>
           <div className="mb-2 text-[13px] font-semibold">Tu calificación</div>

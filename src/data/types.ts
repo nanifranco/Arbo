@@ -138,6 +138,8 @@ export interface DiaryEntry {
   rating?: number
   review?: string
   spoiler?: boolean
+  /** Ciudad o país donde se vio (útil para obras fuera de la cartelera de CDMX) */
+  place?: string
   createdAt: string
 }
 
@@ -146,4 +148,25 @@ export interface UserProfile {
   handle: string
   bio: string
   isDemo: boolean
+}
+
+export interface UserList {
+  id: string
+  name: string
+  description: string
+  productionIds: string[]
+  createdAt: string
+}
+
+/** Solicitud para agregar una obra al catálogo; el equipo la revisa antes de publicarla */
+export interface WorkSuggestion {
+  id: string
+  title: string
+  author: string
+  company: string
+  country: string
+  year: string
+  note: string
+  status: 'En revisión'
+  createdAt: string
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { currentSeason, fmt, getCommunityUser, getPerson, getProduction, getVenue, getWork, ratingStats, reviewsFor, seasonStatus, upcomingPerformances } from '../lib/catalog'
+import { currentSeason, fmt, getCommunityUser, getPerson, getProduction, getVenue, getWork, RATING_THRESHOLD, ratingStats, reviewsFor, seasonStatus, upcomingPerformances } from '../lib/catalog'
 import { useNav, useStore } from '../lib/store'
 import type { CommunityReview, Production } from '../data/types'
 import { Icon } from '../components/Icon'
+import { ListPicker } from './Lists'
 import { Poster } from '../components/Poster'
 import { Avatar, Button, DemoBadge, EmptyState, GenreTag, ScreenHeader, Stars, StatusPill } from '../components/ui'
 
@@ -18,6 +19,7 @@ function Detail({ p }: { p: Production }) {
   const nav = useNav()
   const store = useStore()
   const [tab, setTab] = useState<Tab>('info')
+  const [picking, setPicking] = useState(false)
   const { season, status } = currentSeason(p)
   const venue = getVenue(season.venueId)!
   const work = getWork(p.workId)
@@ -75,9 +77,13 @@ function Detail({ p }: { p: Production }) {
               </Button>
             )}
             <Button variant="secondary" icon="heart" ariaPressed={fav} onClick={toggleFav} className={fav ? '!text-rojo' : ''}>
-              {fav ? 'Favorita' : 'Favorita'}
+              Favorita
+            </Button>
+            <Button variant="secondary" icon="list" onClick={() => setPicking(true)}>
+              Agregar a lista
             </Button>
           </div>
+          <ListPicker productionId={p.id} open={picking} onClose={() => setPicking(false)} />
 
           {seen && (
             <button onClick={() => nav.tab('diary')} className="ticket flex items-center gap-3 px-4 py-3 text-left" style={{ ['--notch' as string]: '78%' }}>
@@ -90,25 +96,50 @@ function Detail({ p }: { p: Production }) {
             </button>
           )}
 
-          {/* Calificación comunidad */}
-          <section className="flex items-center gap-5 rounded-xl border border-linea bg-papel p-4">
-            <div className="text-center">
-              <div className="font-slab text-4xl leading-none tabular">{stats.count ? stats.avg.toFixed(1) : '—'}</div>
-              <div className="mt-1">
-                <Stars value={stats.avg} size={12} />
-              </div>
-              <div className="mt-1 text-[11px] text-gris tabular">{stats.count} calificaciones</div>
-            </div>
-            <div className="flex flex-1 flex-col gap-1" aria-label="Distribución de calificaciones">
-              {[5, 4, 3, 2, 1].map((s) => (
-                <div key={s} className="flex items-center gap-2 text-[11px]">
-                  <span className="w-3 font-mono tabular text-gris">{s}</span>
-                  <div className="h-2 flex-1 rounded-full bg-carton/70">
-                    <div className="h-2 rounded-full bg-amarillo" style={{ width: `${(stats.dist[s - 1] / maxDist) * 100}%` }} />
+          {/* Calificación comunidad (con umbral mínimo antes de publicar promedio) */}
+          <section className="flex items-center gap-5 rounded-xl border border-linea bg-papel p-4" aria-label="Calificación de la comunidad">
+            <div className="w-28 shrink-0 text-center">
+              {stats.avg !== null ? (
+                <>
+                  <div className="font-slab text-4xl leading-none tabular">{stats.avg.toFixed(1)}</div>
+                  <div className="mt-1">
+                    <Stars value={stats.avg} size={12} />
                   </div>
-                </div>
-              ))}
+                  <div className="mt-1 text-[11px] text-gris tabular">{stats.count} calificaciones</div>
+                </>
+              ) : (
+                <>
+                  <div className="font-slab text-2xl leading-none tabular">
+                    {stats.count}
+                    <span className="text-base text-gris">/{RATING_THRESHOLD}</span>
+                  </div>
+                  <div className="mt-1.5 text-[11px] leading-snug text-gris">calificaciones. El promedio se publica al llegar a {RATING_THRESHOLD}.</div>
+                </>
+              )}
             </div>
+            {stats.avg !== null ? (
+              <div className="flex flex-1 flex-col gap-1" aria-label="Distribución de calificaciones">
+                {[5, 4, 3, 2, 1].map((s) => (
+                  <div key={s} className="flex items-center gap-2 text-[11px]">
+                    <span className="w-3 font-mono tabular text-gris">{s}</span>
+                    <div className="h-2 flex-1 rounded-full bg-carton/70">
+                      <div className="h-2 rounded-full bg-amarillo" style={{ width: `${(stats.dist[s - 1] / maxDist) * 100}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : stats.count ? (
+              <div className="flex flex-1 flex-col gap-1.5">
+                <div className="eyebrow !text-[10px] text-gris">Calificaciones individuales</div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                  {[...stats.ratings].sort((a, b) => b - a).map((r, i) => (
+                    <Stars key={i} value={r} size={11} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="flex-1 text-sm text-gris">Nadie la ha calificado todavía.</p>
+            )}
           </section>
 
           {/* Pestañas */}

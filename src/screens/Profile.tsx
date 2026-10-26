@@ -4,6 +4,8 @@ import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
 import { Avatar, Button, DemoBadge, EmptyState, Field, inputCls, PosterCard, ScreenHeader, SectionTitle, Sheet } from '../components/ui'
 import { EntryCard } from './Diary'
+import { MyLists } from './Lists'
+import { MySuggestions } from './Suggest'
 import { ReviewCard } from './ProductionDetail'
 
 export function Profile({ userId }: { userId?: string }) {
@@ -90,6 +92,11 @@ function OwnProfile() {
       </section>
 
       <section>
+        <SectionTitle>Mis listas</SectionTitle>
+        <MyLists />
+      </section>
+
+      <section>
         <SectionTitle action={recent.length ? 'Abrir diario' : undefined} onAction={() => nav.tab('diary')}>
           Actividad reciente
         </SectionTitle>
@@ -101,6 +108,17 @@ function OwnProfile() {
           </div>
         ) : (
           <EmptyState title="Nada por aquí" text="Tus funciones registradas aparecerán en tu perfil." action="Registrar una obra" onAction={() => nav.go({ name: 'log' })} />
+        )}
+      </section>
+
+      <section>
+        <SectionTitle action="Sugerir una obra" onAction={() => nav.go({ name: 'suggest' })}>
+          Mis solicitudes
+        </SectionTitle>
+        {store.suggestions.length ? (
+          <MySuggestions />
+        ) : (
+          <p className="rounded-xl border border-dashed border-linea p-4 text-sm text-gris">Si una obra que viste no está en ÁRBO, sugiérela y el equipo la revisa antes de publicarla.</p>
         )}
       </section>
 

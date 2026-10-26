@@ -194,7 +194,8 @@ export function EntryCard({ e, full = false }: { e: DiaryEntry; full?: boolean }
         <div className="flex items-start gap-2">
           <button onClick={() => nav.go({ name: 'production', id: p.id })} className="min-w-0 flex-1 text-left">
             <span className="block line-clamp-2 font-bold leading-snug hover:underline">{p.title}</span>
-            <span className="block truncate text-xs text-gris">{v ? `${v.name} · ${s?.kind}` : p.company}</span>
+            <span className="block truncate text-xs text-gris">{v ? `${v.name} · ${s?.kind}` : p.company}
+              {e.place ? ` · ${e.place}` : ''}</span>
           </button>
           <button onClick={() => nav.go({ name: 'log', entryId: e.id })} className="grid size-8 shrink-0 place-items-center rounded-full text-gris hover:bg-carton hover:text-tinta" aria-label={`Editar entrada de ${p.title}`}>
             <Icon name="edit" size={16} />
