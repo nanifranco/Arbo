@@ -38,7 +38,7 @@
   /* Letra de cartel condensada: cifras, titulares de sección, carteles */
   --font-display: 'Anton', 'Impact', 'Haettenschweiler', 'Arial Narrow Bold', sans-serif;
   /* Notas a mano */
-  --font-hand: 'Caveat Brush', 'Bradley Hand', 'Segoe Print', cursive;
+  --font-hand: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   /* Interfaz */
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* Boleto / programa de mano */
@@ -75,6 +75,11 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.font-hand {
+  font-style: italic;
+  letter-spacing: -0.005em;
 }
 
 .tabular {

@@ -118,7 +118,7 @@ export function Community() {
                   <HalftonePortrait seed={u.handle} bg={u.color} ink={u.color === '#E9B321' || u.color === '#E76F91' ? '#191919' : '#F6E3A8'} label={u.name} />
                   <span className="mt-2 block font-display text-[19px] uppercase leading-none hover:underline">{u.name}</span>
                   <span className="mt-0.5 block font-mono text-[11px] text-gris">@{u.handle}</span>
-                  <span className="mt-1.5 block font-hand text-[16px] leading-[1.1] text-grafito">{u.bio}</span>
+                  <span className="mt-1.5 block text-[13px] leading-snug text-grafito">{u.bio}</span>
                   <span className="mt-1.5 block text-[11px] text-gris tabular">
                     {count} reseñas · {u.followers + (following ? 1 : 0)} seguidores
                   </span>

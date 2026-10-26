@@ -187,7 +187,7 @@ export function SectionTitle({ children, action, onAction, id, note, eyebrow }: 
         {eyebrow && <div className="eyebrow mb-1 text-gris">{eyebrow}</div>}
         <h2 id={id} className="flex flex-wrap items-baseline gap-x-3 font-display text-[26px] uppercase leading-[0.95] tracking-[0.01em] text-tinta md:text-[30px]">
           <span>{children}</span>
-          {note && <span className="-rotate-3 font-hand text-[22px] normal-case leading-none tracking-normal text-rojo">{note}</span>}
+          {note && <span className="rounded-sm bg-rojo px-1.5 py-0.5 font-sans text-[11px] font-bold uppercase leading-none tracking-widest text-papel">{note}</span>}
         </h2>
       </div>
       {action && (
@@ -258,11 +258,11 @@ export function Avatar({ name, color, size = 40 }: { name: string; color: string
 
 // ——— Tarjetas de producción ———
 
-export function PosterCard({ production, width = 'w-[132px]', showVenue = true, badge, tilt = false }: { production: Production; width?: string; showVenue?: boolean; badge?: ReactNode; tilt?: boolean }) {
+export function PosterCard({ production, width = 'w-[132px]', showVenue = true, badge }: { production: Production; width?: string; showVenue?: boolean; badge?: ReactNode; tilt?: boolean }) {
   const nav = useNav()
   const { season, status } = currentSeason(production)
   const venue = getVenue(season.venueId)
-  const rot = tilt ? ((production.title.length % 5) - 2) * 0.9 : 0
+  const rot = 0
   const daysLeft = Math.ceil((new Date(season.end).getTime() - Date.now()) / 86400000)
   return (
     <button onClick={() => nav.go({ name: 'production', id: production.id })} className={`group shrink-0 text-left ${width}`}>
@@ -270,7 +270,6 @@ export function PosterCard({ production, width = 'w-[132px]', showVenue = true, 
         <div className="overflow-hidden rounded-[3px] shadow-[0_1px_0_rgba(0,0,0,.08),0_10px_18px_-10px_rgba(25,25,25,.55)]">
           <Poster production={production} />
         </div>
-        {tilt && <span className="tape" style={{ width: '42%' }} />}
         <div className="absolute left-1.5 top-1.5">{badge ?? (status !== 'cartelera' ? <StatusPill status={status} /> : daysLeft <= 21 && daysLeft >= 0 ? <span className="eyebrow inline-block -rotate-3 rounded-sm bg-amarillo px-1.5 py-0.5 !text-[9.5px] text-tinta shadow">Últimas funciones</span> : null)}</div>
       </div>
       <div className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-snug">{production.title}</div>

@@ -581,7 +581,7 @@ function Reviews({ p }: { p: Production }) {
             {e.rating ? <Stars value={e.rating} size={13} /> : null}
             <span className="ml-auto font-mono text-xs text-grafito">{fmt.short(e.date)}</span>
           </div>
-          {e.review && <p className="mt-2 font-hand text-[21px] leading-snug">{e.review}</p>}
+          {e.review && <p className="mt-2 text-[15px] leading-relaxed">{e.review}</p>}
           <button onClick={() => nav.go({ name: 'log', entryId: e.id })} className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-rojo hover:underline">
             <Icon name="edit" size={14} /> Editar
           </button>

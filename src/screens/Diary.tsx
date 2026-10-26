@@ -398,7 +398,7 @@ export function EntryCard({ e, full = false }: { e: DiaryEntry; full?: boolean }
           {e.rating ? <Stars value={e.rating} size={15} /> : <span className="text-xs text-gris">Sin calificar</span>}
           {fav && <Icon name="heart" size={15} filled className="text-rojo" />}
         </div>
-        {e.review && <p className={`mt-2 font-hand text-[18px] leading-[1.2] text-grafito ${full ? '' : 'line-clamp-2'}`}>“{e.review}”</p>}
+        {e.review && <p className={`mt-2 font-hand text-[14.5px] leading-relaxed text-grafito ${full ? '' : 'line-clamp-2'}`}>“{e.review}”</p>}
         <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-gris">
           <span>Árbo · boleto nº {folio}</span>
           {fav && (

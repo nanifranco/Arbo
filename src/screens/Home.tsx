@@ -26,7 +26,7 @@ import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
 import { CITY_PHOTOS } from '../data/demo'
-import { Marquee, Stamp, Tape } from '../components/deco'
+import { Marquee } from '../components/deco'
 import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
 export function Home() {
@@ -126,11 +126,7 @@ export function Home() {
                     {getVenue(season.venueId)?.name} · cierra {fmt.dayMonth(season.end)}
                   </div>
                 </div>
-                {daysLeft <= 30 && (
-                  <Stamp className="absolute -top-3 right-3" size="sm" rotate={6}>
-                    Última llamada
-                  </Stamp>
-                )}
+                {daysLeft <= 30 && <span className="absolute right-3 top-3 rounded-sm bg-amarillo px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest">Última llamada</span>}
               </button>
             ))}
           </div>
@@ -432,24 +428,22 @@ function CommunityWall() {
     .filter((r) => !r.spoiler)
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 4)
-  const tones = ['#FBF8F2', '#F6E3A8', '#F7D3DC', '#DBE5D6']
   return (
     <section aria-labelledby="dicen">
       <SectionTitle id="dicen" action="Comunidad" onAction={() => nav.tab('community')}>
         Lo que dice la banda
       </SectionTitle>
-      <div className="wall grid gap-5 rounded-xl p-5 pt-7 sm:grid-cols-2 lg:grid-cols-4">
-        {recent.map((r, i) => {
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {recent.map((r) => {
           const u = getCommunityUser(r.userId)!
           const p = getProduction(r.productionId)!
           return (
             <button
               key={r.id}
               onClick={() => nav.go({ name: 'production', id: p.id })}
-              className="relative flex flex-col gap-2 p-4 pb-5 text-left shadow-[0_10px_18px_-12px_rgba(0,0,0,.55)] transition-transform hover:-translate-y-0.5"
-              style={{ background: tones[i % tones.length], rotate: `${((i % 3) - 1) * 1.6}deg`, backgroundImage: 'var(--grain)' }}
+              className="paper relative flex flex-col gap-2 p-4 pb-5 text-left transition-transform hover:-translate-y-0.5"
+              style={{ borderTop: `4px solid ${p.poster.bg === '#F5F0E6' ? '#191919' : p.poster.bg}` }}
             >
-              <Tape tone={i % 2 ? 'clear' : 'yellow'} />
               <div className="flex items-center gap-2">
                 <Avatar name={u.name} color={u.color} size={28} />
                 <span className="truncate text-[13px] font-semibold">{u.name.split(' ')[0]}</span>
@@ -457,7 +451,7 @@ function CommunityWall() {
                   <Stars value={r.rating} size={12} />
                 </span>
               </div>
-              <p className="font-hand text-[19px] leading-[1.15] text-tinta">“{r.text.length > 120 ? r.text.slice(0, 118) + '…' : r.text}”</p>
+              <p className="text-[14.5px] leading-relaxed text-tinta">“{r.text.length > 120 ? r.text.slice(0, 118) + '…' : r.text}”</p>
               <div className="mt-auto flex items-center gap-1.5 border-t border-dashed border-tinta/20 pt-2 text-xs font-bold">
                 <Icon name="ticket" size={14} className="text-rojo" /> {p.title}
               </div>
