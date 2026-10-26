@@ -1,0 +1,38 @@
+# ÁRBO — Teatro para vivir la ciudad
+
+Prototipo interactivo de ÁRBO, una plataforma dedicada al teatro de la Ciudad de México: cartelera, diario teatral, reseñas, perfiles de artistas y teatros, mapa y comunidad.
+
+> **Datos de demostración.** Todas las producciones, compañías, personas, teatros, direcciones, funciones, precios y reseñas son ficticios (`src/data/demo.ts`). No existe integración de venta de boletos.
+
+## Correr el proyecto
+
+```bash
+npm install
+npm run dev      # servidor local
+npm run build    # genera dist/index.html autocontenido
+```
+
+Stack: React 18 + TypeScript + Tailwind CSS 4 + Vite.
+
+## Estructura
+
+```
+src/
+  data/types.ts      Modelo: Work (obra) → Production (puesta en escena) → Season (temporada)
+  data/demo.ts       Catálogo ficticio de demostración
+  lib/catalog.ts     Capa de acceso a datos (reemplazable por una API/BD)
+  lib/store.tsx      Estado del usuario (diario, por ver, favoritas, seguidos) y navegación
+  components/        Cartel generado, estrellas, botones, chips, boletos, iconos
+  screens/           Bienvenida, Inicio, Buscar, Ficha, Diario, Registrar/Reseñar,
+                     Perfil, Artista, Teatro, Mapa, Por ver, Comunidad
+```
+
+## Sistema visual
+
+- **La pared y la ficha:** la marca vive en carteles, rótulos y titulares; la interfaz es clara como un programa de mano.
+- **Color:** crema papel de fondo, rojo como identidad y acción principal, amarillo y rosa como acentos, verde para información secundaria.
+- **Tipografía:** Permanent Marker (marca y titulares), DM Sans (interfaz), Courier Prime (datos tipo boleto: fechas, horarios, precios).
+
+## Siguiente paso: base de datos
+
+Las pantallas solo leen datos a través de `lib/catalog.ts` y escriben a través de `lib/store.tsx`. Para conectar un backend, reemplaza esas funciones por consultas (p. ej. Supabase/Postgres) manteniendo los tipos de `data/types.ts`.

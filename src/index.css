@@ -1,0 +1,159 @@
+@import 'tailwindcss';
+
+/* ÁRBO — "la pared y la ficha": marca expresiva en carteles y titulares, interfaz limpia como un programa de mano. */
+@theme {
+  --color-rojo: #b71c1c;
+  --color-rojo-hondo: #8e1414;
+  --color-rosa: #e76f91;
+  --color-rosa-claro: #f7d3dc;
+  --color-amarillo: #e9b321;
+  --color-amarillo-claro: #f6e3a8;
+  --color-verde: #23452e;
+  --color-verde-claro: #dbe5d6;
+  --color-crema: #f5f0e6;
+  --color-papel: #fbf8f2;
+  --color-carton: #e8dfcd;
+  --color-tinta: #191919;
+  --color-grafito: #4a4540;
+  --color-gris: #6e665c;
+  --color-linea: #ddd3c2;
+
+  --font-marker: 'Permanent Marker', 'Marker Felt', 'Comic Sans MS', cursive;
+  --font-slab: 'Alfa Slab One', 'Rockwell', Georgia, serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-crema);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  /* Textura de papel muy sutil */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .18 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+.font-marker {
+  letter-spacing: 0.01em;
+}
+
+/* Etiquetas en mayúsculas */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Borde perforado de boleto */
+.ticket {
+  position: relative;
+  background: var(--color-papel);
+  border: 1px solid var(--color-linea);
+  border-radius: 10px;
+}
+.ticket-stub {
+  border-left: 2px dashed var(--color-linea);
+}
+.ticket::before,
+.ticket::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-crema);
+  border: 1px solid var(--color-linea);
+  left: var(--notch, 72%);
+  transform: translateX(-50%);
+}
+.ticket::before {
+  top: -8px;
+  clip-path: inset(50% 0 0 0);
+}
+.ticket::after {
+  bottom: -8px;
+  clip-path: inset(0 0 50% 0);
+}
+
+/* Cinta adhesiva para carteles */
+.tape {
+  position: absolute;
+  width: 44%;
+  height: 16px;
+  left: 28%;
+  top: -7px;
+  background: rgba(246, 227, 168, 0.85);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
+  transform: rotate(-3deg);
+}
+
+/* Subrayado hecho a mano */
+.brush-underline {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 40 3, 90 10, 130 5 S 185 6, 198 4' stroke='%23B71C1C' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 0.4em;
+  background-position: 0 100%;
+  padding-bottom: 0.12em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-amarillo);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.safe-x {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+@keyframes pop-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.pop-in {
+  animation: pop-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
