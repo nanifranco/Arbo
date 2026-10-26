@@ -182,20 +182,26 @@ export function GenreTag({ genre }: { genre: string }) {
 
 export function SectionTitle({ children, action, onAction, id, note, eyebrow }: { children: ReactNode; action?: string; onAction?: () => void; id?: string; note?: string; eyebrow?: string }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-3">
-      <div className="min-w-0">
-        {eyebrow && <div className="eyebrow mb-1 text-gris">{eyebrow}</div>}
-        <h2 id={id} className="flex flex-wrap items-baseline gap-x-3 font-display text-[26px] uppercase leading-[0.95] tracking-[0.01em] text-tinta md:text-[30px]">
-          <span>{children}</span>
-          {note && <span className="rounded-sm bg-rojo px-1.5 py-0.5 font-sans text-[11px] font-bold uppercase leading-none tracking-widest text-papel">{note}</span>}
-        </h2>
+    <div className="mb-5">
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          {eyebrow && <div className="eyebrow mb-1 text-rojo">{eyebrow}</div>}
+          <h2 id={id} className="flex flex-wrap items-center gap-x-3 gap-y-1 font-playbill text-[28px] leading-[1.02] text-tinta md:text-[34px]">
+            <span>{children}</span>
+            {note && <span className="rounded-sm bg-tinta px-1.5 py-0.5 font-sans text-[10.5px] font-bold uppercase leading-none tracking-widest text-oro-claro">{note}</span>}
+          </h2>
+        </div>
+        {action && (
+          <button onClick={onAction} className="group inline-flex shrink-0 items-center gap-1 pb-1 text-[13px] font-bold text-rojo">
+            <span className="group-hover:underline">{action}</span>
+            <Icon name="arrow" size={15} />
+          </button>
+        )}
       </div>
-      {action && (
-        <button onClick={onAction} className="group inline-flex shrink-0 items-center gap-1 pb-0.5 text-[13px] font-bold text-rojo">
-          <span className="group-hover:underline">{action}</span>
-          <Icon name="arrow" size={15} />
-        </button>
-      )}
+      <div className="mt-2 flex flex-col gap-[3px]" aria-hidden="true">
+        <span className="h-[2px] bg-tinta" />
+        <span className="h-px bg-tinta/60" />
+      </div>
     </div>
   )
 }
@@ -305,7 +311,7 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-marker text-xl">{title}</h3>
+          <h3 className="font-playbill text-xl">{title}</h3>
           <button onClick={onClose} className="grid size-9 place-items-center rounded-full hover:bg-carton" aria-label="Cerrar">
             <Icon name="x" />
           </button>

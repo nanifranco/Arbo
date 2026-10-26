@@ -24,6 +24,7 @@ import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
 import { HalftonePortrait, Stamp, Tape } from '../components/deco'
 import { Photo } from '../components/Photo'
+import { Laurel, MetroChip } from '../components/broadway'
 import { Avatar, Button, DemoBadge, EmptyState, PosterCard, ScreenHeader, SectionTitle, Stars, StatusPill } from '../components/ui'
 import { ListPicker } from './Lists'
 
@@ -95,11 +96,19 @@ function Detail({ p }: { p: Production }) {
               <StatusPill status={status} />
               <DemoBadge className="!border-papel/60 !text-papel" />
             </div>
-            <h1 className="mt-3 font-marker text-[40px] leading-[0.98] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[64px]">{p.title}</h1>
+            <h1 className="mt-3 font-playbill text-[40px] leading-[0.98] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[64px]">{p.title}</h1>
             <p className="mt-2 text-[15px] opacity-90">
               {p.company} · {getWork(p.workId)?.author}
             </p>
-            <div className="mt-4 flex flex-wrap gap-1.5">
+            {p.quote && (
+              <div className="mt-3">
+                <Laurel light source={p.quote.source}>
+                  “{p.quote.text}”
+                </Laurel>
+              </div>
+            )}
+            <div className="mt-4 flex flex-wrap items-center gap-1.5">
+              <MetroChip name={venue.neighborhood} small />
               {p.genres.map((g) => (
                 <span key={g} className="rounded-sm bg-papel px-2 py-0.5 text-[12px] font-bold text-tinta">
                   {g}
@@ -302,10 +311,14 @@ function Program({ p }: { p: Production }) {
   const cast = p.credits.filter((c) => c.character)
   const crew = p.credits.filter((c) => !c.character)
   return (
-    <article className="paper torn-top relative px-5 pb-6 pt-8 md:px-8">
+    <article className="paper relative overflow-hidden px-5 pb-6 pt-0 md:px-8">
+      <div className="-mx-5 mb-6 flex items-center justify-between bg-rojo px-5 py-2 text-papel md:-mx-8 md:px-8">
+        <span className="font-display text-[22px] uppercase tracking-[0.12em]">Programa</span>
+        <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-oro-claro">{getVenue(currentSeason(p).season.venueId)?.name}</span>
+      </div>
       <div className="text-center">
         <div className="eyebrow text-gris">{p.company} presenta</div>
-        <h2 className="mt-1 font-marker text-[30px] leading-tight">{p.title}</h2>
+        <h2 className="mt-1 font-playbill text-[32px] leading-tight">{p.title}</h2>
         <div className="mx-auto mt-2 h-[3px] w-24 bg-rojo" />
       </div>
       <p className="mx-auto mt-5 max-w-[60ch] text-[15.5px] leading-relaxed first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-[52px] first-letter:leading-[0.8] first-letter:text-rojo">{p.synopsis}</p>

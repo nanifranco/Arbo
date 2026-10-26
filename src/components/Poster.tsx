@@ -325,8 +325,9 @@ function luminance(hex: string) {
 }
 
 /**
- * Cartel fotográfico: foto de escena en duotono con los colores de la producción,
- * título tipográfico, fechas y créditos. Si la foto no carga, usa el cartel ilustrado.
+ * Cartel de cartelera (key art): foto a color con el tono de la producción, nombres estelares
+ * arriba del título, título grande, laurel con cita y bloque de créditos abajo.
+ * Si la foto no carga, usa el cartel ilustrado.
  */
 export function Poster({ production, className = '', showCompany = true }: { production: Production; className?: string; showCompany?: boolean }) {
   const [failed, setFailed] = useState(false)
@@ -334,67 +335,78 @@ export function Poster({ production, className = '', showCompany = true }: { pro
   if (!photo || failed) return <IllustratedPoster production={production} className={className} showCompany={showCompany} />
 
   const { bg, fg, accent, layout } = production.poster
-  const dark = luminance(bg) < 70
   const cream = bg === CREAM
+  const base = cream ? '#191919' : bg
+  const ink = cream ? CREAM : luminance(bg) > 150 ? INK : fg
+  const titleInk = luminance(base) > 150 ? INK : fg === INK ? CREAM : fg
   const { season } = currentSeason(production)
   const venue = getVenue(season.venueId)
   const director = production.credits.find((c) => /Dirección/.test(c.role))
-  const cast = production.credits.filter((c) => /Act|Intérprete|Titiritera/.test(c.role)).slice(0, 3)
+  const stars = production.credits.filter((c) => /Act|Intérprete|Titiritera/.test(c.role)).slice(0, 2)
   const title = production.title
-  const longest = Math.max(...title.split(' ').map((w) => w.length))
-  const useMarker = layout === 'rotulo' || layout === 'franjas' || layout === 'recorte'
-  const titleSize = useMarker ? Math.min(15, 150 / Math.max(longest + 2, title.length / 2.2)) : Math.min(22, 175 / Math.max(longest + 1, title.length / 2.6))
-  const band = cream ? INK : bg
-  const bandText = cream ? CREAM : fg
+  const [main, sub] = title.split(':').map((t) => t.trim())
+  const longest = Math.max(...main.split(' ').map((w) => w.length))
+  const condensed = layout === 'slab'
+  const size = condensed ? Math.min(24, 150 / Math.max(longest, main.length / 2.4)) : Math.min(17, 125 / Math.max(longest + 1, main.length / 2.2))
 
   return (
-    <div className={`relative aspect-[2/3] w-full overflow-hidden ${className}`} style={{ containerType: 'inline-size', background: band }} role="img" aria-label={`Cartel de ${title}`}>
-      {/* foto en duotono */}
+    <div className={`relative aspect-[2/3] w-full overflow-hidden ${className}`} style={{ containerType: 'inline-size', background: base }} role="img" aria-label={`Cartel de ${title}`}>
       <img
         src={unsplash(photo, 600)}
         alt=""
         loading="lazy"
         decoding="async"
         onError={() => setFailed(true)}
-        className="absolute inset-x-0 top-0 h-[78%] w-full object-cover"
-        style={{ filter: dark || cream ? 'grayscale(1) contrast(1.2) brightness(.95)' : 'grayscale(1) contrast(1.25) brightness(1.05)', mixBlendMode: dark || cream ? 'normal' : 'multiply' }}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ filter: 'contrast(1.1) saturate(1.05)' }}
       />
-      {(dark || cream) && <div className="absolute inset-x-0 top-0 h-[78%]" style={{ background: accent, mixBlendMode: 'soft-light', opacity: 0.55 }} />}
-      {/* fundido hacia la banda de color */}
-      <div className="absolute inset-x-0 top-[38%] h-[41%]" style={{ background: `linear-gradient(to bottom, transparent, ${band})` }} />
+      {/* tono de la producción */}
+      <div className="absolute inset-0" style={{ background: base, mixBlendMode: 'color', opacity: 0.45 }} />
+      <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${base}e6 0%, ${base}00 26%, ${base}00 44%, ${base}f2 72%, ${base} 100%)` }} />
 
-      {showCompany && venue && (
-        <div className="absolute inset-x-0 top-0 px-[6cqw] pt-[5cqw] text-center font-mono font-bold uppercase tracking-wider" style={{ fontSize: '3.3cqw', color: dark || cream ? '#FBF8F2' : INK, textShadow: dark || cream ? '0 1px 2px rgba(0,0,0,.6)' : '0 1px 0 rgba(255,255,255,.4)' }}>
-          {venue.name} presenta
+      {showCompany && stars.length > 0 && (
+        <div className="absolute inset-x-0 top-0 flex justify-center gap-[5cqw] px-[5cqw] pt-[5cqw] font-display uppercase tracking-[0.12em]" style={{ fontSize: '4.6cqw', color: ink }}>
+          {stars.map((c) => (
+            <span key={c.personId} className="truncate">
+              {getPerson(c.personId)?.name}
+            </span>
+          ))}
         </div>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 px-[6cqw] pb-[5cqw]">
-        {layout === 'franjas' || layout === 'recorte' ? (
-          <div className="mb-[3cqw] inline-block -rotate-2 px-[3.5cqw] py-[2cqw] shadow-md" style={{ background: CREAM, color: INK }}>
-            <div className="font-marker leading-[1]" style={{ fontSize: `${titleSize * 0.85}cqw` }}>
-              {title}
-            </div>
+      <div className="absolute inset-x-0 bottom-0 px-[6cqw] pb-[5cqw] text-center">
+        {showCompany && production.quote && (
+          <div className="mb-[2cqw] flex items-center justify-center gap-[1.5cqw]" style={{ color: accent }}>
+            <span style={{ fontSize: '6cqw' }}>❦</span>
+            <span className="font-playbill italic" style={{ fontSize: '4.4cqw', color: ink }}>
+              “{production.quote.text}”
+            </span>
+            <span style={{ fontSize: '6cqw', transform: 'scaleX(-1)', display: 'inline-block' }}>❦</span>
           </div>
-        ) : (
-          <div className={`${useMarker ? 'font-marker normal-case' : 'font-display uppercase'} mb-[2cqw] leading-[0.92]`} style={{ fontSize: `${titleSize}cqw`, color: bandText, textShadow: `0.6cqw 0.6cqw 0 ${accent}` }}>
-            {title}
+        )}
+        <div className={`${condensed ? 'font-display uppercase' : 'font-playbill'} leading-[0.92]`} style={{ fontSize: `${size}cqw`, color: titleInk, textShadow: '0 0.4cqw 1.6cqw rgba(0,0,0,.45)' }}>
+          {main}
+        </div>
+        {sub && (
+          <div className="mt-[1cqw] font-display uppercase tracking-[0.3em]" style={{ fontSize: '4.6cqw', color: accent }}>
+            {sub}
           </div>
         )}
         {showCompany && (
           <>
-            <div className="font-display uppercase tracking-wide" style={{ fontSize: '6.4cqw', color: bandText, lineHeight: 1.05 }}>
-              {fmt.dayMonth(season.start)} — {fmt.dayMonth(season.end)}
+            <div className="mx-auto my-[2.5cqw] h-[0.5cqw] w-[30%]" style={{ background: accent }} />
+            <div className="font-display uppercase tracking-[0.12em]" style={{ fontSize: '5cqw', color: ink, lineHeight: 1.1 }}>
+              {venue?.name} · {fmt.dayMonth(season.start)} — {fmt.dayMonth(season.end)}
             </div>
-            <div className="mt-[1cqw] font-mono font-bold uppercase leading-tight opacity-85" style={{ fontSize: '2.6cqw', color: bandText }}>
-              {director && <div className="truncate">Dirección {getPerson(director.personId)?.name}</div>}
-              {cast.length > 0 && <div className="truncate">Con {cast.map((c) => getPerson(c.personId)?.name).join(' · ')}</div>}
-            </div>
+            {director && (
+              <div className="mt-[1.2cqw] font-sans font-bold uppercase leading-tight tracking-[0.08em] opacity-80" style={{ fontSize: '2.7cqw', color: ink }}>
+                Dirección {getPerson(director.personId)?.name} · {production.company}
+              </div>
+            )}
           </>
         )}
       </div>
-      <div className="pointer-events-none absolute inset-0 mix-blend-overlay" style={{ backgroundImage: 'var(--grain)', opacity: 0.7 }} />
-      <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,.12), transparent 45%, rgba(0,0,0,.06) 55%, transparent)' }} />
+      <div className="pointer-events-none absolute inset-0 mix-blend-overlay" style={{ backgroundImage: 'var(--grain)', opacity: 0.5 }} />
     </div>
   )
 }

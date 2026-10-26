@@ -23,6 +23,7 @@ import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
 import { Facade, FACADE } from '../components/deco'
 import { Photo } from '../components/Photo'
+import { MetroChip } from '../components/broadway'
 import { Avatar, Button, Chip, CommunityScore, DemoBadge, EmptyState, Sheet, StatusPill } from '../components/ui'
 
 type DateFilter = 'any' | 'today' | 'weekend' | 'week'
@@ -439,8 +440,8 @@ function VenueList() {
           <button key={v.id} onClick={() => nav.go({ name: 'venue', id: v.id })} className="paper group flex flex-col overflow-hidden !p-0 text-left" style={{ rotate: `${((i % 3) - 1) * 0.5}deg` }}>
             <Photo id={v.photo} alt={`Foto de referencia de ${v.name}`} w={800} className="aspect-[16/9]" fallback={<div className="wall absolute inset-0 px-4 pt-4"><Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} /></div>}>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <span className="absolute bottom-2 left-3 rounded-sm px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-papel" style={{ background: v.color === '#E9B321' || v.color === '#E76F91' ? '#191919' : v.color }}>
-                {v.neighborhood}
+              <span className="absolute bottom-2 left-3">
+                <MetroChip name={v.neighborhood} small />
               </span>
             </Photo>
             <div className="flex items-center justify-between gap-3 p-4">

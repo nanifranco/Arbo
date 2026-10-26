@@ -654,11 +654,278 @@ export const demoDiarySeed = [
 export const demoWatchlistSeed = ['cartografia', 'charol', 'mudanzas']
 export const demoFollowsSeed = ['u-ximena', 'u-paulina', 'u-marisol']
 
+/* ——— Cartelera de gran formato (ficticia) ——— */
+venues.push(
+  {
+    id: 'gran-teatro-reforma',
+    name: 'Gran Teatro Reforma',
+    neighborhood: 'Juárez',
+    alcaldia: 'Cuauhtémoc',
+    address: 'Paseo Ejemplo 300, Juárez (dirección de demostración)',
+    x: 40,
+    y: 30,
+    capacity: 1100,
+    founded: 1953,
+    description: 'Teatro de gran formato con marquesina de focos sobre la avenida. Aquí llegan los musicales, los estrenos estelares y las funciones de gala.',
+    access: ['Rampas y elevador a todos los niveles', 'Cerca de Metrobús y Metro', 'Estacionamiento con convenio a una cuadra'],
+    color: '#5E0B10',
+  },
+  {
+    id: 'teatro-arena-doctores',
+    name: 'Teatro Arena Doctores',
+    neighborhood: 'Doctores',
+    alcaldia: 'Cuauhtémoc',
+    address: 'Calle Ejemplo 190, Doctores (dirección de demostración)',
+    x: 60,
+    y: 46,
+    capacity: 650,
+    founded: 1961,
+    description: 'Antigua arena de box convertida en teatro: el escenario está al centro y el público rodea la acción desde las cuatro gradas.',
+    access: ['Acceso a gradas por rampa lateral', 'Cerca de Metro', 'Venta de antojitos en la explanada'],
+    color: '#191919',
+  },
+)
+
+works.push(
+  { id: 'w-reforma', title: 'Avenida Reforma', author: 'Paco Ibarra y Ana Belén Cruz', year: 2026 },
+  { id: 'w-danzon', title: 'La Reina del Danzón', author: 'Renata Solís', year: 2026 },
+  { id: 'w-lucha', title: 'Lucha de Dioses', author: 'Mauricio Cano', year: 2025 },
+  { id: 'w-diva', title: 'Mi vecina la diva', author: 'Inés Valdivia', year: 2026 },
+  { id: 'w-neon', title: 'Neón', author: 'Paco Ibarra', year: 2027 },
+)
+
+people.push(
+  { id: 'mariana-de-la-luz', name: 'Mariana de la Luz', roles: ['Actriz', 'Cantante'], from: 'Monterrey', bio: 'Protagonista de musicales de gran formato. Empezó en el coro de una temporada de verano y hoy encabeza la marquesina.' },
+  { id: 'diego-saldana', name: 'Diego Saldaña', roles: ['Actor', 'Cantante'], from: 'Puebla', bio: 'Barítono y comediante. Pasa del bolero al rock sin despeinarse.' },
+  { id: 'ricardo-ferrer', name: 'Ricardo Ferrer', roles: ['Director'], from: 'Del Valle, CDMX', bio: 'Director de musicales con elencos de treinta personas y escenografías que se mueven solas.' },
+  { id: 'ana-belen-cruz', name: 'Ana Belén Cruz', roles: ['Directora musical', 'Compositora'], from: 'Veracruz', bio: 'Arreglista y directora de orquesta. Mezcla danzón, son y big band en sus partituras.' },
+  { id: 'consuelo-arriaga', name: 'Consuelo Arriaga', roles: ['Actriz', 'Comediante'], from: 'Tepito, CDMX', bio: 'Comediante de carpa y televisión. Su timing es leyenda entre el público de los domingos.' },
+  { id: 'rogelio-tigre', name: 'Rogelio “Tigre” Ramírez', roles: ['Actor', 'Acróbata'], from: 'Nezahualcóyotl', bio: 'Luchador profesional que se pasó al teatro. Hace sus propias caídas, todas las funciones.' },
+)
+
+productions.push(
+  {
+    id: 'avenida-reforma',
+    workId: 'w-reforma',
+    title: 'Avenida Reforma: el musical',
+    company: 'Producciones Glorieta',
+    genres: ['Musical', 'Comedia'],
+    durationMin: 150,
+    age: 'Todo público',
+    synopsis:
+      'Un siglo de historias sobre la avenida más famosa de la ciudad: un bolero de los años cincuenta, una marcha, un primer beso al pie del Ángel. Veinte canciones originales, orquesta en vivo y treinta intérpretes.',
+    poster: { bg: '#5E0B10', fg: '#F3DC9B', accent: '#D9A93A', layout: 'slab', motif: 'estrella' },
+    quote: { text: '¡El musical del año!', source: 'Paulina Cid · comunidad ÁRBO' },
+    bigShow: true,
+    credits: [
+      { personId: 'mariana-de-la-luz', role: 'Actriz', character: 'Rosario' },
+      { personId: 'diego-saldana', role: 'Actor', character: 'Joaquín' },
+      { personId: 'consuelo-arriaga', role: 'Actriz', character: 'Doña Tere' },
+      { personId: 'ricardo-ferrer', role: 'Dirección' },
+      { personId: 'ana-belen-cruz', role: 'Dirección musical' },
+      { personId: 'paco-ibarra', role: 'Libreto y letras' },
+      { personId: 'yolanda-perez', role: 'Coreografía' },
+      { personId: 'nadia-roble', role: 'Iluminación' },
+    ],
+    seasons: [
+      {
+        id: 'reforma-2026',
+        venueId: 'gran-teatro-reforma',
+        kind: 'Estreno',
+        start: '2026-08-20',
+        end: '2027-03-28',
+        schedule: [
+          { day: 4, time: '20:30' },
+          { day: 5, time: '20:30' },
+          { day: 6, time: '17:00' },
+          { day: 6, time: '21:00' },
+          { day: 0, time: '13:30' },
+          { day: 0, time: '18:00' },
+        ],
+        priceFrom: 650,
+        priceTo: 2400,
+      },
+    ],
+  },
+  {
+    id: 'reina-danzon',
+    workId: 'w-danzon',
+    title: 'La Reina del Danzón',
+    company: 'Teatro Bravo',
+    genres: ['Musical', 'Comedia'],
+    durationMin: 120,
+    age: 'Todo público',
+    synopsis:
+      'Doña Chelo, campeona de danzón de los ochenta, vuelve al salón para enfrentar a su propia nieta en el concurso del año. Comedia musical con big band en vivo y pista de baile en el escenario.',
+    poster: { bg: '#E76F91', fg: '#191919', accent: '#D9A93A', layout: 'rotulo', motif: 'corazon' },
+    quote: { text: 'Sales bailando', source: 'Marisol Herrera · comunidad ÁRBO' },
+    bigShow: true,
+    credits: [
+      { personId: 'consuelo-arriaga', role: 'Actriz', character: 'Doña Chelo' },
+      { personId: 'sofia-ledesma', role: 'Actriz', character: 'Yesenia' },
+      { personId: 'diego-saldana', role: 'Actor', character: 'El Güero' },
+      { personId: 'valeria-quintero', role: 'Dirección' },
+      { personId: 'ana-belen-cruz', role: 'Dirección musical' },
+      { personId: 'renata-solis', role: 'Dramaturgia' },
+    ],
+    seasons: [
+      {
+        id: 'danzon-2026',
+        venueId: 'teatro-tranvia',
+        kind: 'Estreno',
+        start: '2026-09-25',
+        end: '2027-01-17',
+        schedule: [
+          { day: 5, time: '20:30' },
+          { day: 6, time: '18:00' },
+          { day: 6, time: '21:00' },
+          { day: 0, time: '17:00' },
+        ],
+        priceFrom: 450,
+        priceTo: 1200,
+      },
+    ],
+  },
+  {
+    id: 'lucha-dioses',
+    workId: 'w-lucha',
+    title: 'Lucha de Dioses',
+    company: 'Compañía Doble Lazo',
+    genres: ['Comedia', 'Teatro físico'],
+    durationMin: 105,
+    age: '+12',
+    synopsis:
+      'Una familia de luchadores enmascarados se juega el campeonato y la herencia en una sola noche. Acrobacias reales, rock en vivo y el público gritando desde las gradas.',
+    poster: { bg: '#191919', fg: '#E9B321', accent: '#B71C1C', layout: 'slab', motif: 'mascaras' },
+    quote: { text: 'Pura adrenalina', source: 'Joaquín Bernal · comunidad ÁRBO' },
+    bigShow: true,
+    credits: [
+      { personId: 'rogelio-tigre', role: 'Actor', character: 'El Tigre de Plata' },
+      { personId: 'dulce-ortega', role: 'Actriz', character: 'La Dama Jaguar' },
+      { personId: 'rodrigo-lince', role: 'Actor', character: 'Hijo del Tigre' },
+      { personId: 'mauricio-cano', role: 'Dramaturgia y dirección' },
+      { personId: 'aurelio-mora', role: 'Escenografía' },
+    ],
+    seasons: [
+      {
+        id: 'lucha-2026',
+        venueId: 'teatro-arena-doctores',
+        kind: 'Temporada',
+        start: '2026-10-01',
+        end: '2026-12-20',
+        schedule: [
+          { day: 4, time: '20:00' },
+          { day: 5, time: '20:00' },
+          { day: 6, time: '20:00' },
+          { day: 0, time: '18:00' },
+        ],
+        priceFrom: 380,
+        priceTo: 950,
+      },
+    ],
+  },
+  {
+    id: 'vecina-diva',
+    workId: 'w-diva',
+    title: 'Mi vecina la diva',
+    company: 'Producciones Glorieta',
+    genres: ['Comedia'],
+    durationMin: 95,
+    age: '+12',
+    synopsis:
+      'Una estrella de telenovela en decadencia se muda a un edificio de la Narvarte y convierte la junta de condóminos en su último gran escenario.',
+    poster: { bg: '#E9B321', fg: '#191919', accent: '#B71C1C', layout: 'rotulo', motif: 'estrella' },
+    quote: { text: 'Lloré de risa', source: 'Gerardo Tapia · comunidad ÁRBO' },
+    bigShow: true,
+    credits: [
+      { personId: 'mariana-de-la-luz', role: 'Actriz', character: 'Fabiola Montenegro' },
+      { personId: 'emiliano-paz', role: 'Actor', character: 'El administrador' },
+      { personId: 'consuelo-arriaga', role: 'Actriz', character: 'Doña Pilar' },
+      { personId: 'ricardo-ferrer', role: 'Dirección' },
+      { personId: 'ines-valdivia', role: 'Dramaturgia' },
+    ],
+    seasons: [
+      {
+        id: 'diva-2026',
+        venueId: 'teatro-jacaranda',
+        kind: 'Estreno',
+        start: '2026-10-15',
+        end: '2027-02-14',
+        schedule: [
+          { day: 3, time: '20:30' },
+          { day: 4, time: '20:30' },
+          { day: 5, time: '20:30' },
+          { day: 6, time: '18:00' },
+          { day: 0, time: '18:00' },
+        ],
+        priceFrom: 420,
+        priceTo: 980,
+      },
+    ],
+  },
+  {
+    id: 'neon',
+    workId: 'w-neon',
+    title: 'Neón',
+    company: 'Producciones Glorieta',
+    genres: ['Musical'],
+    durationMin: 130,
+    age: '+15',
+    synopsis:
+      'Una noche en el Eje Central contada por una banda de rock, un taxista y una cantante de karaoke. Musical de rock con canciones originales y la banda tocando arriba del escenario.',
+    poster: { bg: '#141012', fg: '#FF3B8D', accent: '#00A4E4', layout: 'sol', motif: 'luna' },
+    bigShow: true,
+    credits: [
+      { personId: 'diego-saldana', role: 'Actor', character: 'El Taxista' },
+      { personId: 'sofia-ledesma', role: 'Actriz', character: 'Karla Karaoke' },
+      { personId: 'ricardo-ferrer', role: 'Dirección' },
+      { personId: 'paco-ibarra', role: 'Música y libreto' },
+    ],
+    seasons: [
+      {
+        id: 'neon-2027',
+        venueId: 'gran-teatro-reforma',
+        kind: 'Estreno',
+        start: '2027-04-15',
+        end: '2027-08-29',
+        schedule: [
+          { day: 4, time: '20:30' },
+          { day: 5, time: '20:30' },
+          { day: 6, time: '17:00' },
+          { day: 6, time: '21:00' },
+          { day: 0, time: '17:00' },
+        ],
+        priceFrom: 600,
+        priceTo: 2200,
+      },
+    ],
+  },
+)
+
+communityReviews.push(
+  { id: 'r20', userId: 'u-paulina', productionId: 'avenida-reforma', rating: 5, date: '2026-10-25', likes: 212, text: 'Producción enorme: el número del Ángel con treinta personas en escena y la orquesta a todo lo que da. Mariana de la Luz canta como si la avenida fuera suya.' },
+  { id: 'r21', userId: 'u-marisol', productionId: 'avenida-reforma', rating: 4.5, date: '2026-10-21', likes: 64, text: 'Llevé a toda la familia y salimos cantando. El segundo acto se alarga un poco, pero el final vale cada peso.' },
+  { id: 'r22', userId: 'u-marisol', productionId: 'reina-danzon', rating: 4.5, date: '2026-10-24', likes: 88, text: 'Consuelo Arriaga es una fuerza de la naturaleza. Al final el público se paró a bailar en los pasillos.' },
+  { id: 'r23', userId: 'u-joaquin', productionId: 'lucha-dioses', rating: 4.5, date: '2026-10-23', likes: 57, text: 'Siéntate en primera fila de grada: los luchadores caen a un metro de ti. Pura adrenalina.' },
+  { id: 'r24', userId: 'u-gerardo', productionId: 'vecina-diva', rating: 4, date: '2026-10-22', likes: 41, text: 'La junta de condóminos es la mejor escena de comedia que he visto en años. Lloré de risa.' },
+)
+Object.assign(communityRatings, {
+  'avenida-reforma': [5, 5, 4.5, 4, 5, 4.5, 5, 4, 4.5, 5, 5, 3.5, 4.5, 5],
+  'reina-danzon': [4.5, 5, 4, 4.5, 4, 5, 4.5, 4, 4.5, 5],
+  'lucha-dioses': [4, 4.5, 5, 3.5, 4, 4.5, 4, 5],
+  'vecina-diva': [4, 3.5, 4.5, 4, 4, 5, 3.5, 4, 4.5],
+})
+
 /**
  * FOTOGRAFÍAS DE REFERENCIA (Unsplash, licencia libre).
  * No son fotos de estas producciones ficticias: ilustran el tipo de imagen que tendrá cada ficha.
  */
 const PRODUCTION_PHOTOS: Record<string, string[]> = {
+  'avenida-reforma': ['photo-1621976360623-004223992275', 'photo-1547153760-18fc86324498', 'photo-1660144948544-a5f5cd04caf7'],
+  'reina-danzon': ['photo-1529229504105-4ea795dcbf59', 'photo-1593573969589-c416b9c926de', 'photo-1613210434051-4b00d62d03fb'],
+  'lucha-dioses': ['photo-1767979400753-68241ee99633', 'photo-1585699324551-f6c309eedeca', 'photo-1550026593-cb89847b168d'],
+  'vecina-diva': ['photo-1593408995262-1d8933c37afc', 'photo-1592854899481-f78db4baccb6', 'photo-1630050525402-06c617847d27'],
+  neon: ['photo-1613210434051-4b00d62d03fb', 'photo-1565798846807-2af22c843402', 'photo-1503095396549-807759245b35'],
   trolebus: ['photo-1558970439-add78fc68990', 'photo-1630050525402-06c617847d27', 'photo-1740867650660-e1a0a677e666'],
   jacaranda: ['photo-1758513207242-98d050b7eae4', 'photo-1603647228752-7637a91fc9c7', 'photo-1603647284638-60268b672f55'],
   azotea: ['photo-1677216769410-658c4bf83416', 'photo-1592854899481-f78db4baccb6', 'photo-1580934738416-ad531f2920f7'],
@@ -673,8 +940,10 @@ const PRODUCTION_PHOTOS: Record<string, string[]> = {
   mudanzas: ['photo-1493794179168-82ca7cb00437', 'photo-1585464231875-d9ef1f5ad396', 'photo-1521216774850-01bc1c5fe0da'],
 }
 const VENUE_PHOTOS: Record<string, string> = {
+  'gran-teatro-reforma': 'photo-1615414015111-8d98cb65677e',
+  'teatro-arena-doctores': 'photo-1576724196706-3f23f51ea351',
   'foro-la-banqueta': 'photo-1521216774850-01bc1c5fe0da',
-  'teatro-jacaranda': 'photo-1615414015111-8d98cb65677e',
+  'teatro-jacaranda': 'photo-1565798828737-01777ecbcd33',
   'sala-la-azotea': 'photo-1674681512510-e06db64f53fb',
   'foro-el-zaguan': 'photo-1610220260088-07fafc859f87',
   'teatro-del-mercado': 'photo-1580934738416-ad531f2920f7',

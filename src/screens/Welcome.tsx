@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { allProductions } from '../lib/catalog'
 import { useStore } from '../lib/store'
-import { IllustratedPoster } from '../components/Poster'
+import { IllustratedPoster, Poster } from '../components/Poster'
 import { Tape } from '../components/deco'
 import { Button, DemoBadge, Field, inputCls, Logo } from '../components/ui'
 
 /** La pared: carteles pegados unos sobre otros, con cinta. Solo carteles ilustrados, sin fotos. */
-export function PosterWall({ className = '' }: { className?: string }) {
+export function PosterWall({ className = '', keyArt = false }: { className?: string; keyArt?: boolean }) {
   const ps = allProductions()
   // orden mezclado para que no se repitan carteles iguales en la misma columna
   const order = [3, 8, 0, 10, 5, 1, 7, 11, 2, 9, 4, 6]
@@ -17,7 +17,7 @@ export function PosterWall({ className = '' }: { className?: string }) {
         {tiles.map((p, i) => (
           <div key={i} className="relative" style={{ rotate: `${((i * 37) % 9) - 4}deg`, translate: `0 ${((i * 13) % 5) * 6 - 12}px` }}>
             <div className="shadow-[0_12px_22px_-12px_rgba(0,0,0,.65)]">
-              <IllustratedPoster production={p} />
+              {keyArt ? <Poster production={p} /> : <IllustratedPoster production={p} />}
             </div>
             {i % 3 === 0 && <Tape tone={i % 2 ? 'clear' : 'yellow'} />}
           </div>

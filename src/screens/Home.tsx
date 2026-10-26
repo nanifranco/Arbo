@@ -26,7 +26,8 @@ import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
 import { CITY_PHOTOS } from '../data/demo'
-import { Marquee, Tape } from '../components/deco'
+import { Marquee } from '../components/deco'
+import { Laurel, MarqueeSign, MetroChip, Neon } from '../components/broadway'
 import { PosterWall } from './Welcome'
 import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
@@ -37,7 +38,7 @@ export function Home() {
   const cartelera = all.filter((p) => currentSeason(p).status === 'cartelera').sort((a, b) => popularity(b.id) - popularity(a.id))
   const archivo = all.filter((p) => currentSeason(p).status === 'archivo')
   const proximamente = all.filter((p) => currentSeason(p).status === 'proximamente')
-  const featured = getProduction('medea-barrio') ?? cartelera[0]
+  const featured = getProduction('avenida-reforma') ?? cartelera[0]
   const fs = currentSeason(featured)
   const fv = getVenue(fs.season.venueId)!
   const nextShows = upcomingPerformances(fs.season, 3)
@@ -53,39 +54,42 @@ export function Home() {
         </span>
       </header>
 
-      {/* ——— Héroe: collage de carteles detrás, obra destacada al frente ——— */}
+      {/* ——— Héroe: marquesina sobre la pared de carteles ——— */}
       <section aria-labelledby="destacada" className="-mx-4 md:mx-0">
         <div className="relative overflow-hidden md:rounded-2xl">
-          <PosterWall />
-          <div className="relative grid gap-6 px-4 py-8 md:grid-cols-[minmax(0,1fr)_200px] md:items-center md:px-10 md:py-12">
-            <div className="paper relative max-w-xl -rotate-[0.6deg] p-5 shadow-[0_30px_60px_-24px_rgba(0,0,0,.75)] md:p-7">
-              <Tape />
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-sm bg-rojo px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-papel">Destacada de la semana</span>
-                <DemoBadge />
+          <PosterWall keyArt />
+          <div className="absolute inset-0 bg-gradient-to-b from-noche/70 via-noche/55 to-noche/90" aria-hidden="true" />
+          <div className="relative mx-auto flex max-w-3xl flex-col items-center px-4 pb-9 pt-8 text-center md:pb-12 md:pt-12">
+            <span id="destacada" className="sr-only">
+              Obra destacada: {featured.title}
+            </span>
+            <MarqueeSign top="★ Ahora en función ★" bottom={`${fv.name} · ${fv.neighborhood}`} className="w-full max-w-xl">
+              {featured.title.split(':')[0]}
+            </MarqueeSign>
+            {featured.quote && (
+              <div className="mt-5">
+                <Laurel light source={featured.quote.source}>
+                  “{featured.quote.text}”
+                </Laurel>
               </div>
-              <h1 id="destacada" className="mt-3 font-marker text-[36px] leading-[0.98] md:text-[52px]">
-                {featured.title}
-              </h1>
-              <p className="mt-2 text-[13.5px] text-gris">
-                {featured.company} · {featured.genres.join(' / ')} · {fv.name}, {fv.neighborhood}
-              </p>
-              <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-grafito">{featured.synopsis}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {nextShows.map((s) => (
-                  <span key={s.date + s.time} className="ticket px-2.5 py-1 font-mono text-[12px] font-bold" style={{ ['--notch' as string]: '50%' }}>
-                    {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-rojo">{s.time}</span>
-                  </span>
-                ))}
-              </div>
-              <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="mt-5 inline-flex items-center gap-2 rounded-full bg-rojo px-6 py-3 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
-                Ver obra y funciones <Icon name="arrow" size={16} />
-              </button>
+            )}
+            <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-papel/85">{featured.synopsis}</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {nextShows.map((s) => (
+                <span key={s.date + s.time} className="ticket px-2.5 py-1 font-mono text-[12px] font-bold text-tinta" style={{ ['--notch' as string]: '50%' }}>
+                  {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-rojo">{s.time}</span>
+                </span>
+              ))}
             </div>
-            <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="relative mx-auto hidden w-[200px] rotate-2 shadow-[0_26px_44px_-16px_rgba(0,0,0,.85)] transition-transform hover:-translate-y-1 md:block" aria-label={`Ver ${featured.title}`}>
-              <Poster production={featured} />
-              <Tape tone="clear" />
-            </button>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+              <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="inline-flex items-center gap-2 rounded-full bg-rojo px-6 py-3 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
+                Ver funciones y boletos <Icon name="arrow" size={16} />
+              </button>
+              <MetroChip name={fv.neighborhood} />
+            </div>
+            <div className="mt-3">
+              <DemoBadge className="!border-papel/50 !text-papel/80" />
+            </div>
           </div>
         </div>
         <Marquee items={['Obras', 'Gente', 'Espacios', 'Historias', 'CDMX', 'Teatro para vivir la ciudad']} />
@@ -93,7 +97,7 @@ export function Home() {
 
       <div className="-mt-4">
         <p className="eyebrow text-gris">Hola{firstName ? `, ${firstName}` : ''}</p>
-        <p className="mt-1 font-marker text-[26px] leading-tight md:text-[32px]">¿Qué vamos a ver esta semana?</p>
+        <p className="mt-1 font-playbill text-[28px] leading-tight md:text-[34px]">¿Qué vamos a ver esta semana?</p>
       </div>
 
       <Tonight />
@@ -135,7 +139,7 @@ export function Home() {
         </SectionTitle>
         <div className="wall no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-5 pb-6 pt-7 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:rounded-xl md:px-6">
           {cartelera.slice(0, 10).map((p) => (
-            <PosterCard key={p.id} production={p} width="w-[138px] md:w-auto" tilt />
+            <PosterCard key={p.id} production={p} width="w-[168px] md:w-auto" />
           ))}
         </div>
       </section>
@@ -143,7 +147,7 @@ export function Home() {
       {/* ——— Géneros como cartas ——— */}
       <GenreDeck />
 
-      <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-8">
+      <div className="grid gap-12 md:grid-cols-[1.1fr_1fr] md:gap-8 [&>*]:min-w-0">
         <Ranking />
         {/* Mapa */}
         <section aria-labelledby="cerca">
@@ -187,12 +191,12 @@ export function Home() {
 
       <CommunityWall />
 
-      <div className="grid gap-12 md:grid-cols-2 md:gap-8">
+      <div className="grid gap-12 md:grid-cols-2 md:gap-8 [&>*]:min-w-0">
         <section aria-labelledby="proximas">
           <SectionTitle id="proximas" note="pronto">
             Próximos estrenos
           </SectionTitle>
-          <div className="flex gap-4 pt-2">
+          <div className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4 pt-2 md:mx-0 md:px-0">
             {proximamente.map((p) => (
               <PosterCard key={p.id} production={p} width="w-[128px]" tilt />
             ))}
@@ -223,7 +227,7 @@ export function Home() {
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3 md:px-0">
-          <span className="font-marker text-xl">Teatro para vivir la ciudad</span>
+          <span className="font-playbill text-xl">Teatro para vivir la ciudad</span>
           <DemoBadge label="Datos de demostración · fotos de referencia: Unsplash" />
         </div>
       </footer>
@@ -262,22 +266,26 @@ function Tonight() {
   const label = (i: number) => (i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : DAY_NAMES[days[i].date.getDay()].slice(0, 3))
 
   return (
-    <section aria-labelledby="noche">
-      <SectionTitle id="noche" eyebrow="Funciones por día y hora" note={sel === 0 ? 'hoy' : undefined}>
-        {sel === 0 ? 'Esta noche en la ciudad' : `${DAY_NAMES[day.date.getDay()]} en la ciudad`}
-      </SectionTitle>
-      <div className="no-scrollbar -mx-4 mb-3 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0" role="tablist" aria-label="Día">
+    <section aria-labelledby="noche" className="relative -mx-4 overflow-hidden bg-noche px-4 pb-8 pt-9 md:mx-0 md:rounded-2xl md:px-8">
+      <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: 'radial-gradient(ellipse at 15% 0%, rgba(255,59,141,.35), transparent 55%), radial-gradient(ellipse at 90% 20%, rgba(0,164,228,.25), transparent 50%)' }} aria-hidden="true" />
+      <div className="relative mb-5">
+        <div className="eyebrow text-oro-claro/80">Funciones por día y hora</div>
+        <h2 id="noche" className="mt-1 font-sign text-[30px] uppercase leading-[1.05] md:text-[42px]">
+          <Neon flicker>{sel === 0 ? 'Esta noche' : DAY_NAMES[day.date.getDay()]}</Neon> <Neon color="#00A4E4">en la ciudad</Neon>
+        </h2>
+      </div>
+      <div className="no-scrollbar relative -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0" role="tablist" aria-label="Día">
         {days.map((d, i) => (
           <button
             key={i}
             role="tab"
             aria-selected={sel === i}
             onClick={() => setSel(i)}
-            className={`flex shrink-0 flex-col items-center rounded-lg border px-3 py-1.5 ${sel === i ? 'border-tinta bg-tinta text-papel' : 'border-linea bg-papel hover:border-grafito'} ${d.perfs.length ? '' : 'opacity-50'}`}
+            className={`relative flex shrink-0 flex-col items-center rounded-lg border px-3 py-1.5 ${sel === i ? 'border-neon bg-neon text-papel shadow-[0_0_18px_rgba(255,59,141,.6)]' : 'border-white/20 bg-white/5 text-papel hover:border-white/50'} ${d.perfs.length ? '' : 'opacity-40'}`}
           >
             <span className="text-[11px] font-bold uppercase tracking-wider">{label(i)}</span>
             <span className="font-display text-xl leading-none tabular">{d.date.getDate()}</span>
-            <span className={`text-[10px] ${sel === i ? 'text-amarillo' : 'text-gris'}`}>{d.perfs.length ? `${d.perfs.length} func.` : 'descanso'}</span>
+            <span className={`text-[10px] ${sel === i ? 'text-papel' : 'text-papel/60'}`}>{d.perfs.length ? `${d.perfs.length} func.` : 'descanso'}</span>
           </button>
         ))}
       </div>

@@ -82,6 +82,10 @@ export interface Production {
   poster: PosterStyle
   /** Fotos de escena (ids de Unsplash, solo referencia visual en el prototipo). La primera es la principal. */
   photos?: string[]
+  /** Frase destacada para el cartel (de la comunidad de demostración) */
+  quote?: { text: string; source: string }
+  /** Producción de gran formato (musical o comedia estelar) */
+  bigShow?: boolean
   credits: Credit[]
   seasons: Season[]
 }

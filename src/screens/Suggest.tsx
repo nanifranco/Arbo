@@ -55,14 +55,14 @@ export function Suggest({ initialTitle = '' }: { initialTitle?: string }) {
         <div className="mx-auto flex max-w-md flex-col items-center py-10 text-center">
           <div className="ticket mb-6 w-full px-6 py-5 text-left" style={{ ['--notch' as string]: '75%' }}>
             <div className="eyebrow text-gris">Solicitud de obra</div>
-            <div className="mt-1 font-marker text-2xl">{form.title}</div>
+            <div className="mt-1 font-playbill text-2xl">{form.title}</div>
             <div className="mt-1 text-sm text-gris">
               {form.author} · {form.country}
               {form.year ? ` · ${form.year}` : ''}
             </div>
             <div className="mt-3 inline-block rounded-full bg-amarillo px-2.5 py-0.5 text-xs font-bold">En revisión</div>
           </div>
-          <h1 className="font-marker text-3xl">¡Gracias por sumar al archivo!</h1>
+          <h1 className="font-playbill text-3xl">¡Gracias por sumar al archivo!</h1>
           <p className="mt-2 text-sm text-gris">El equipo de ÁRBO revisa cada solicitud antes de publicarla. Puedes ver su estado en tu perfil. En este prototipo la revisión no ocurre: la solicitud se queda guardada en tu navegador.</p>
           <div className="mt-6 flex gap-2">
             <Button variant="secondary" onClick={() => nav.back()}>

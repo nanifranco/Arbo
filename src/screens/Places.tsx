@@ -17,6 +17,7 @@ import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
+import { MetroChip, StreetPlate } from '../components/broadway'
 import { Facade, FACADE, HalftonePortrait, SeatMap, Stamp, Tape } from '../components/deco'
 import { Chip, DemoBadge, EmptyState, PosterCard, ScreenHeader, SectionTitle, StatusPill } from '../components/ui'
 
@@ -183,7 +184,7 @@ export function VenueProfile({ id }: { id: string }) {
             </span>
             <DemoBadge className="!border-papel/60 !text-papel" />
           </div>
-          <h1 className="mt-3 font-marker text-[46px] leading-[0.95] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[68px]">{v.name}</h1>
+          <h1 className="mt-3 font-playbill text-[46px] leading-[0.95] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[68px]">{v.name}</h1>
           <p className="mt-3 max-w-[58ch] text-[15.5px] leading-relaxed text-papel/90">{v.description}</p>
         </div>
       </header>
@@ -191,9 +192,11 @@ export function VenueProfile({ id }: { id: string }) {
       <div className="grid gap-6 md:grid-cols-3">
         <div className="paper flex flex-col gap-3 p-5">
           <h2 className="font-display text-xl uppercase">Cómo llegar</h2>
-          <p className="flex items-start gap-2 text-sm">
-            <Icon name="pin" size={16} className="mt-0.5 shrink-0 text-rojo" /> {v.address}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <StreetPlate street={v.address.split(',')[0]} colonia={v.neighborhood} />
+            <MetroChip name={v.neighborhood} />
+          </div>
+          <p className="text-xs text-gris">Dirección de demostración.</p>
           <ul className="flex flex-col gap-2 text-sm text-grafito">
             {v.access.map((a) => (
               <li key={a} className="flex items-start gap-2">

@@ -128,7 +128,7 @@ function YearInStage({ entries }: { entries: DiaryEntry[] }) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="eyebrow text-grafito">Estadísticas</div>
-          <h2 className="font-marker text-[30px] leading-none md:text-[38px]">Tu año en escena</h2>
+          <h2 className="font-playbill text-[30px] leading-none md:text-[38px]">Tu año en escena</h2>
         </div>
         <div className="flex gap-1.5" role="group" aria-label="Año">
           {years.map((y) => (
