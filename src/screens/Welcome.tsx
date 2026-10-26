@@ -1,51 +1,29 @@
 import { useState, type FormEvent } from 'react'
 import { allProductions } from '../lib/catalog'
 import { useStore } from '../lib/store'
-import { Poster } from '../components/Poster'
-import { PaintedSign, Stamp, Tape } from '../components/deco'
-import { Photo } from '../components/Photo'
-import { CITY_PHOTOS } from '../data/demo'
-import { Icon } from '../components/Icon'
+import { IllustratedPoster } from '../components/Poster'
+import { Tape } from '../components/deco'
 import { Button, DemoBadge, Field, inputCls, Logo } from '../components/ui'
 
-/** La pared: carteles pegados unos sobre otros, rótulos pintados y cinta */
+/** La pared: carteles pegados unos sobre otros, con cinta. Solo carteles ilustrados, sin fotos. */
 export function PosterWall({ className = '' }: { className?: string }) {
   const ps = allProductions()
-  const spots = [
-    { p: 0, l: -4, t: -6, w: 34, r: -5 },
-    { p: 3, l: 26, t: -10, w: 30, r: 4 },
-    { p: 1, l: 53, t: -4, w: 32, r: -3 },
-    { p: 8, l: 80, t: -8, w: 30, r: 6 },
-    { p: 6, l: 8, t: 34, w: 28, r: 3 },
-    { p: 2, l: 62, t: 30, w: 30, r: -6 },
-    { p: 4, l: 86, t: 32, w: 26, r: -2 },
-    { p: 9, l: -6, t: 64, w: 26, r: -4 },
-    { p: 7, l: 74, t: 62, w: 30, r: 5 },
-  ]
+  // orden mezclado para que no se repitan carteles iguales en la misma columna
+  const order = [3, 8, 0, 10, 5, 1, 7, 11, 2, 9, 4, 6]
+  const tiles = Array.from({ length: 42 }, (_, i) => ps[order[(i * 5 + Math.floor(i / 12) * 7) % order.length] % ps.length])
   return (
     <div className={`wall pointer-events-none absolute inset-0 overflow-hidden ${className}`} aria-hidden="true">
-      {/* restos de papel viejo */}
-      <div className="absolute left-[30%] top-[52%] h-[30%] w-[40%] rotate-2 bg-papel/70" />
-      <div className="absolute left-[2%] top-[22%] h-[14%] w-[30%] -rotate-6 bg-rosa/40" />
-      {spots.map((s, i) => (
-        <div key={i} className="absolute" style={{ left: `${s.l}%`, top: `${s.t}%`, width: `${s.w}%`, rotate: `${s.r}deg` }}>
-          <div className="shadow-[0_12px_22px_-12px_rgba(0,0,0,.65)]">
-            <Poster production={ps[s.p % ps.length]} />
+      <div className="absolute -left-[6%] -top-[4%] grid w-[112%] grid-cols-4 gap-3 sm:grid-cols-5 lg:grid-cols-7">
+        {tiles.map((p, i) => (
+          <div key={i} className="relative" style={{ rotate: `${((i * 37) % 9) - 4}deg`, translate: `0 ${((i * 13) % 5) * 6 - 12}px` }}>
+            <div className="shadow-[0_12px_22px_-12px_rgba(0,0,0,.65)]">
+              <IllustratedPoster production={p} />
+            </div>
+            {i % 3 === 0 && <Tape tone={i % 2 ? 'clear' : 'yellow'} />}
           </div>
-          {i % 2 === 0 && <Tape tone={i % 4 === 0 ? 'yellow' : 'clear'} />}
-        </div>
-      ))}
-      <div className="absolute left-[24%] top-[36%] w-[40%] min-w-[150px]">
-        <PaintedSign lines={['Aquí', 'también', 'hay teatro']} bg="#E9B321" rotate={-4} />
+        ))}
       </div>
-      <div className="absolute left-[56%] top-[66%] w-[30%] min-w-[120px]">
-        <PaintedSign lines={['El arte', 'también', 'vive aquí']} bg="#E76F91" rotate={5} />
-      </div>
-      <div className="absolute left-[8%] top-[78%]">
-        <Stamp color="#B71C1C" rotate={-10} size="lg">
-          Hoy · CDMX
-        </Stamp>
-      </div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,240,230,.15),rgba(25,25,25,.35))]" />
     </div>
   )
 }
@@ -68,95 +46,58 @@ export function Welcome() {
   }
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[1.15fr_1fr]">
-      <div className="relative h-[52vh] min-h-[340px] md:sticky md:top-0 md:h-screen">
-        <PosterWall />
-        <div className="absolute inset-x-0 bottom-0 h-10 bg-crema torn-top md:hidden" />
-      </div>
+    <div className="relative grid min-h-[100dvh] place-items-center overflow-hidden px-4 py-10">
+      <PosterWall />
+      <div className="paper torn-bottom relative w-full max-w-sm -rotate-1 px-6 pb-9 pt-8 text-center shadow-[0_30px_60px_-20px_rgba(0,0,0,.7)]">
+        <Tape />
+        <Logo size="xl" />
+        <p className="mt-2 font-marker text-[24px] leading-[1.05] text-tinta">
+          Teatro para <span className="brush-underline">vivir la ciudad</span>
+        </p>
 
-      <div className="safe-x relative flex flex-col pb-8 pt-4 md:justify-center md:px-12 md:py-10">
-        <div className="mx-auto w-full max-w-md">
-          <div className="flex items-start justify-between">
-            <Logo size="xl" />
-
+        {mode === 'start' ? (
+          <div className="mt-7 flex flex-col gap-3">
+            <Button onClick={() => setMode('signup')} className="w-full !min-h-12 !text-[15px]">
+              Crear cuenta
+            </Button>
+            <Button variant="secondary" onClick={enterDemo} className="w-full !min-h-12 !text-[15px]">
+              Entrar con perfil de demostración
+            </Button>
+            <p className="pt-1 text-[11.5px] leading-snug text-gris">
+              <DemoBadge className="mr-1" /> Prototipo con datos ficticios. Tus datos se guardan solo en este navegador.
+            </p>
           </div>
-          <p className="mt-3 font-marker text-[28px] leading-[1.05] text-tinta md:text-[34px]">
-            Teatro para
-            <br />
-            <span className="brush-underline">vivir la ciudad</span>
-          </p>
-          <p className="mt-5 border-l-[3px] border-rojo pl-3 font-mono text-[14.5px] leading-relaxed text-grafito">
-            Descubre, vive y comparte el teatro mexicano. ÁRBO conecta a las personas con las obras, los artistas y los espacios que dan vida a la Ciudad de México.
-          </p>
-
-          <ul className="mt-6 grid grid-cols-3 gap-2">
-            {[
-              ['search', 'Descubre', 'qué hay hoy'],
-              ['diary', 'Registra', 'lo que viste'],
-              ['community', 'Comparte', 'con tu gente'],
-            ].map(([icon, a, b]) => (
-              <li key={a} className="paper flex flex-col items-start gap-1 px-3 py-2.5">
-                <Icon name={icon as 'search'} size={20} className="text-rojo" />
-                <span className="font-display text-[17px] uppercase leading-none">{a}</span>
-                <span className="text-[11.5px] leading-tight text-gris">{b}</span>
-              </li>
-            ))}
-          </ul>
-
-          {mode === 'start' ? (
-            <div className="mt-6 flex flex-col gap-3">
-              <Button onClick={() => setMode('signup')} className="w-full !min-h-12 !text-[15px]">
+        ) : (
+          <form onSubmit={submit} noValidate className="mt-6 flex flex-col gap-4 text-left">
+            <Field label="Nombre" htmlFor="su-name" error={errors.name}>
+              <input id="su-name" className={inputCls} value={form.name} aria-invalid={!!errors.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="name" />
+            </Field>
+            <Field label="Nombre de usuario" htmlFor="su-handle" error={errors.handle} hint="Así te encontrarán en la comunidad.">
+              <div className="flex items-center rounded-lg border border-linea bg-papel focus-within:border-tinta">
+                <span className="pl-3 text-gris">@</span>
+                <input
+                  id="su-handle"
+                  className="w-full bg-transparent px-1 py-2.5 text-[15px] focus:outline-none"
+                  value={form.handle}
+                  aria-invalid={!!errors.handle}
+                  onChange={(e) => setForm({ ...form, handle: e.target.value.toLowerCase() })}
+                  autoComplete="username"
+                />
+              </div>
+            </Field>
+            <Field label="Correo" htmlFor="su-email" error={errors.email} hint="En el prototipo no se envía ningún correo.">
+              <input id="su-email" type="email" className={inputCls} value={form.email} aria-invalid={!!errors.email} onChange={(e) => setForm({ ...form, email: e.target.value })} autoComplete="email" />
+            </Field>
+            <div className="flex gap-2 pt-1">
+              <Button variant="ghost" onClick={() => setMode('start')}>
+                Atrás
+              </Button>
+              <Button type="submit" className="flex-1">
                 Crear cuenta
               </Button>
-              <Button variant="secondary" onClick={enterDemo} className="w-full !min-h-12 !text-[15px]">
-                Entrar con perfil de demostración
-              </Button>
-              <p className="flex items-start gap-2 pt-1 text-xs text-gris">
-                <DemoBadge />
-                <span>Prototipo: las obras, teatros, funciones y personas son ficticios. Tus datos se guardan solo en este navegador.</span>
-              </p>
             </div>
-          ) : (
-            <form onSubmit={submit} noValidate className="paper relative mt-6 flex flex-col gap-4 p-5">
-              <Tape />
-              <h2 className="font-marker text-2xl">Tu butaca te espera</h2>
-              <Field label="Nombre" htmlFor="su-name" error={errors.name}>
-                <input id="su-name" className={inputCls} value={form.name} aria-invalid={!!errors.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="name" />
-              </Field>
-              <Field label="Nombre de usuario" htmlFor="su-handle" error={errors.handle} hint="Así te encontrarán en la comunidad.">
-                <div className="flex items-center rounded-lg border border-linea bg-papel focus-within:border-tinta">
-                  <span className="pl-3 text-gris">@</span>
-                  <input
-                    id="su-handle"
-                    className="w-full bg-transparent px-1 py-2.5 text-[15px] focus:outline-none"
-                    value={form.handle}
-                    aria-invalid={!!errors.handle}
-                    onChange={(e) => setForm({ ...form, handle: e.target.value.toLowerCase() })}
-                    autoComplete="username"
-                  />
-                </div>
-              </Field>
-              <Field label="Correo" htmlFor="su-email" error={errors.email} hint="En el prototipo no se envía ningún correo.">
-                <input id="su-email" type="email" className={inputCls} value={form.email} aria-invalid={!!errors.email} onChange={(e) => setForm({ ...form, email: e.target.value })} autoComplete="email" />
-              </Field>
-              <div className="flex gap-2 pt-1">
-                <Button variant="ghost" onClick={() => setMode('start')}>
-                  Atrás
-                </Button>
-                <Button type="submit" className="flex-1">
-                  Crear cuenta
-                </Button>
-              </div>
-            </form>
-          )}
-
-          <div className="mt-10 grid grid-cols-3 gap-1.5">
-            {[CITY_PHOTOS.bellasArtes, CITY_PHOTOS.telon, CITY_PHOTOS.jacarandas].map((id, i) => (
-              <Photo key={id} id={id} alt={['Palacio de Bellas Artes', 'Telón rojo de teatro', 'Jacarandas en flor'][i]} w={500} className="aspect-[3/4] rounded-sm" />
-            ))}
-          </div>
-          <p className="mt-2 text-[11px] text-gris">Fotos de referencia: Unsplash.</p>
-        </div>
+          </form>
+        )}
       </div>
     </div>
   )
