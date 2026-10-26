@@ -2,7 +2,9 @@ import { useState, type FormEvent } from 'react'
 import { allProductions } from '../lib/catalog'
 import { useStore } from '../lib/store'
 import { Poster } from '../components/Poster'
-import { PaintedSign, Skyline, Stamp, Sticker, Tape } from '../components/deco'
+import { PaintedSign, Stamp, Tape } from '../components/deco'
+import { Photo } from '../components/Photo'
+import { CITY_PHOTOS } from '../data/demo'
 import { Icon } from '../components/Icon'
 import { Button, DemoBadge, Field, inputCls, Logo } from '../components/ui'
 
@@ -76,9 +78,7 @@ export function Welcome() {
         <div className="mx-auto w-full max-w-md">
           <div className="flex items-start justify-between">
             <Logo size="xl" />
-            <Sticker bg="#E9B321" size={70} rotate={12} className="mt-2 hidden sm:inline-grid">
-              Hecho en CDMX
-            </Sticker>
+
           </div>
           <p className="mt-3 font-marker text-[28px] leading-[1.05] text-tinta md:text-[34px]">
             Teatro para
@@ -150,7 +150,12 @@ export function Welcome() {
             </form>
           )}
 
-          <Skyline className="mt-10 opacity-90" />
+          <div className="mt-10 grid grid-cols-3 gap-1.5">
+            {[CITY_PHOTOS.bellasArtes, CITY_PHOTOS.telon, CITY_PHOTOS.jacarandas].map((id, i) => (
+              <Photo key={id} id={id} alt={['Palacio de Bellas Artes', 'Telón rojo de teatro', 'Jacarandas en flor'][i]} w={500} className="aspect-[3/4] rounded-sm" />
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] text-gris">Fotos de referencia: Unsplash.</p>
         </div>
       </div>
     </div>

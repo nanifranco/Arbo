@@ -1,0 +1,21 @@
+# Revisión manual: verifica fotos y genera capturas del prototipo.
+name: Revisar prototipo
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/check-photos.mjs
+      - run: npx -y playwright@1.48.2 install --with-deps chromium && npm i --no-save playwright@1.48.2 && node scripts/screens.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capturas
+          path: shots

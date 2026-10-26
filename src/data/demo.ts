@@ -653,3 +653,45 @@ export const demoDiarySeed = [
 ]
 export const demoWatchlistSeed = ['cartografia', 'charol', 'mudanzas']
 export const demoFollowsSeed = ['u-ximena', 'u-paulina', 'u-marisol']
+
+/**
+ * FOTOGRAFÍAS DE REFERENCIA (Unsplash, licencia libre).
+ * No son fotos de estas producciones ficticias: ilustran el tipo de imagen que tendrá cada ficha.
+ */
+const PRODUCTION_PHOTOS: Record<string, string[]> = {
+  trolebus: ['photo-1558970439-add78fc68990', 'photo-1630050525402-06c617847d27', 'photo-1740867650660-e1a0a677e666'],
+  jacaranda: ['photo-1758513207242-98d050b7eae4', 'photo-1603647228752-7637a91fc9c7', 'photo-1603647284638-60268b672f55'],
+  azotea: ['photo-1677216769410-658c4bf83416', 'photo-1592854899481-f78db4baccb6', 'photo-1580934738416-ad531f2920f7'],
+  sonambulos: ['photo-1503095396549-807759245b35', 'photo-1504505278590-428d1acd0f07', 'photo-1550026593-cb89847b168d'],
+  'medea-barrio': ['photo-1579539760267-b2e78d9d735e', 'photo-1565798846807-2af22c843402', 'photo-1541904845547-0eaf866de232'],
+  programa: ['photo-1606674975206-53aa497dc2f5', 'photo-1607634397429-f26d6e22b4ce', 'photo-1514306191717-452ec28c7814'],
+  cartografia: ['photo-1571173069043-82a7a13cee9f', 'photo-1524330685423-3e1966445abe', 'photo-1593408995262-1d8933c37afc'],
+  loteria: ['photo-1709119622973-a5e955bfb1ec', 'photo-1624234594485-d7d329f6b515', 'photo-1709114776916-e6e48708bbbe'],
+  charol: ['photo-1547153760-18fc86324498', 'photo-1767979400753-68241ee99633', 'photo-1529229504105-4ea795dcbf59'],
+  'casa-dos-puertas': ['photo-1585699324551-f6c309eedeca', 'photo-1660144948544-a5f5cd04caf7', 'photo-1593573969589-c416b9c926de'],
+  'fuera-de-cuadro': ['photo-1764069373440-483ed9363f19', 'photo-1583482183620-f692113aafc3', 'photo-1606674975206-53aa497dc2f5'],
+  mudanzas: ['photo-1493794179168-82ca7cb00437', 'photo-1585464231875-d9ef1f5ad396', 'photo-1521216774850-01bc1c5fe0da'],
+}
+const VENUE_PHOTOS: Record<string, string> = {
+  'foro-la-banqueta': 'photo-1521216774850-01bc1c5fe0da',
+  'teatro-jacaranda': 'photo-1615414015111-8d98cb65677e',
+  'sala-la-azotea': 'photo-1674681512510-e06db64f53fb',
+  'foro-el-zaguan': 'photo-1610220260088-07fafc859f87',
+  'teatro-del-mercado': 'photo-1580934738416-ad531f2920f7',
+  'teatro-tranvia': 'photo-1576724196706-3f23f51ea351',
+  'foro-los-arcos': 'photo-1562329265-95a6d7a83440',
+}
+productions.forEach((p) => (p.photos = PRODUCTION_PHOTOS[p.id]))
+venues.forEach((v) => (v.photo = VENUE_PHOTOS[v.id]))
+
+/** Fotos de la ciudad (referencia visual) */
+export const CITY_PHOTOS = {
+  bellasArtes: 'photo-1547686669-9a8cb1a22d91',
+  angel: 'photo-1632855022158-848e5949f7f7',
+  jacarandas: 'photo-1591635639229-9444b962ac59',
+  calle: 'photo-1585464231875-d9ef1f5ad396',
+  gente: 'photo-1493794179168-82ca7cb00437',
+  sala: 'photo-1615414015111-8d98cb65677e',
+  telon: 'photo-1514306191717-452ec28c7814',
+  publico: 'photo-1576724196706-3f23f51ea351',
+}

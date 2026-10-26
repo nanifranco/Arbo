@@ -1,6 +1,5 @@
 import { NavProvider, StoreProvider, useNav, useStore, type Route, type Tab } from './lib/store'
 import { Icon, type IconName } from './components/Icon'
-import { Skyline } from './components/deco'
 import { Button, DemoBadge, Logo, ToastHost } from './components/ui'
 import { Welcome } from './screens/Welcome'
 import { Home } from './screens/Home'
@@ -85,7 +84,6 @@ function Shell() {
           Registrar obra
         </Button>
         <div className="mt-auto flex flex-col gap-2 text-xs text-gris">
-          <Skyline showTaxi={false} />
           <p className="font-marker text-base leading-tight text-tinta">Teatro para vivir la ciudad</p>
           <DemoBadge label="Prototipo" />
           <p>Obras, teatros, funciones y personas de demostración. Sin venta de boletos.</p>

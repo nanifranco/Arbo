@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
+import { unsplash } from './Photo'
 import { currentSeason, fmt, getPerson, getVenue } from '../lib/catalog'
 import type { PosterMotif, Production } from '../data/types'
 
@@ -129,7 +130,7 @@ export function Motif({ kind, color, accent }: { kind: PosterMotif; color: strin
   }
 }
 
-export function Poster({ production, className = '', showCompany = true }: { production: Production; className?: string; showCompany?: boolean }) {
+export function IllustratedPoster({ production, className = '', showCompany = true }: { production: Production; className?: string; showCompany?: boolean }) {
   const id = useId().replace(/:/g, '')
   const { bg, fg, accent, layout, motif } = production.poster
   const title = production.title
@@ -315,5 +316,85 @@ export function Poster({ production, className = '', showCompany = true }: { pro
       <rect width="200" height="300" filter={`url(#g${id})`} />
       {seed % 3 === 0 && <path d="M200 0 L184 0 L200 14Z" fill={CREAM} opacity=".9" />}
     </svg>
+  )
+}
+
+function luminance(hex: string) {
+  const n = parseInt(hex.slice(1), 16)
+  return 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)
+}
+
+/**
+ * Cartel fotográfico: foto de escena en duotono con los colores de la producción,
+ * título tipográfico, fechas y créditos. Si la foto no carga, usa el cartel ilustrado.
+ */
+export function Poster({ production, className = '', showCompany = true }: { production: Production; className?: string; showCompany?: boolean }) {
+  const [failed, setFailed] = useState(false)
+  const photo = production.photos?.[0]
+  if (!photo || failed) return <IllustratedPoster production={production} className={className} showCompany={showCompany} />
+
+  const { bg, fg, accent, layout } = production.poster
+  const dark = luminance(bg) < 70
+  const cream = bg === CREAM
+  const { season } = currentSeason(production)
+  const venue = getVenue(season.venueId)
+  const director = production.credits.find((c) => /Dirección/.test(c.role))
+  const cast = production.credits.filter((c) => /Act|Intérprete|Titiritera/.test(c.role)).slice(0, 3)
+  const title = production.title
+  const longest = Math.max(...title.split(' ').map((w) => w.length))
+  const useMarker = layout === 'rotulo' || layout === 'franjas' || layout === 'recorte'
+  const titleSize = useMarker ? Math.min(15, 150 / Math.max(longest + 2, title.length / 2.2)) : Math.min(22, 175 / Math.max(longest + 1, title.length / 2.6))
+  const band = cream ? INK : bg
+  const bandText = cream ? CREAM : fg
+
+  return (
+    <div className={`relative aspect-[2/3] w-full overflow-hidden ${className}`} style={{ containerType: 'inline-size', background: band }} role="img" aria-label={`Cartel de ${title}`}>
+      {/* foto en duotono */}
+      <img
+        src={unsplash(photo, 600)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className="absolute inset-x-0 top-0 h-[78%] w-full object-cover"
+        style={{ filter: dark || cream ? 'grayscale(1) contrast(1.2) brightness(.95)' : 'grayscale(1) contrast(1.25) brightness(1.05)', mixBlendMode: dark || cream ? 'normal' : 'multiply' }}
+      />
+      {(dark || cream) && <div className="absolute inset-x-0 top-0 h-[78%]" style={{ background: accent, mixBlendMode: 'soft-light', opacity: 0.55 }} />}
+      {/* fundido hacia la banda de color */}
+      <div className="absolute inset-x-0 top-[38%] h-[41%]" style={{ background: `linear-gradient(to bottom, transparent, ${band})` }} />
+
+      {showCompany && venue && (
+        <div className="absolute inset-x-0 top-0 px-[6cqw] pt-[5cqw] text-center font-mono font-bold uppercase tracking-wider" style={{ fontSize: '3.3cqw', color: dark || cream ? '#FBF8F2' : INK, textShadow: dark || cream ? '0 1px 2px rgba(0,0,0,.6)' : '0 1px 0 rgba(255,255,255,.4)' }}>
+          {venue.name} presenta
+        </div>
+      )}
+
+      <div className="absolute inset-x-0 bottom-0 px-[6cqw] pb-[5cqw]">
+        {layout === 'franjas' || layout === 'recorte' ? (
+          <div className="mb-[3cqw] inline-block -rotate-2 px-[3.5cqw] py-[2cqw] shadow-md" style={{ background: CREAM, color: INK }}>
+            <div className="font-marker leading-[1]" style={{ fontSize: `${titleSize * 0.85}cqw` }}>
+              {title}
+            </div>
+          </div>
+        ) : (
+          <div className={`${useMarker ? 'font-marker normal-case' : 'font-display uppercase'} mb-[2cqw] leading-[0.92]`} style={{ fontSize: `${titleSize}cqw`, color: bandText, textShadow: `0.6cqw 0.6cqw 0 ${accent}` }}>
+            {title}
+          </div>
+        )}
+        {showCompany && (
+          <>
+            <div className="font-display uppercase tracking-wide" style={{ fontSize: '6.4cqw', color: bandText, lineHeight: 1.05 }}>
+              {fmt.dayMonth(season.start)} — {fmt.dayMonth(season.end)}
+            </div>
+            <div className="mt-[1cqw] font-mono font-bold uppercase leading-tight opacity-85" style={{ fontSize: '2.6cqw', color: bandText }}>
+              {director && <div className="truncate">Dirección {getPerson(director.personId)?.name}</div>}
+              {cast.length > 0 && <div className="truncate">Con {cast.map((c) => getPerson(c.personId)?.name).join(' · ')}</div>}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="pointer-events-none absolute inset-0 mix-blend-overlay" style={{ backgroundImage: 'var(--grain)', opacity: 0.7 }} />
+      <div className="pointer-events-none absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,.12), transparent 45%, rgba(0,0,0,.06) 55%, transparent)' }} />
+    </div>
   )
 }

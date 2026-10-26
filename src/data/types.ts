@@ -80,6 +80,8 @@ export interface Production {
   age: AgeRating
   synopsis: string
   poster: PosterStyle
+  /** Fotos de escena (ids de Unsplash, solo referencia visual en el prototipo). La primera es la principal. */
+  photos?: string[]
   credits: Credit[]
   seasons: Season[]
 }
@@ -106,6 +108,8 @@ export interface Venue {
   description: string
   access: string[]
   color: string
+  /** Foto del recinto (id de Unsplash, referencia visual) */
+  photo?: string
 }
 
 export interface CommunityUser {

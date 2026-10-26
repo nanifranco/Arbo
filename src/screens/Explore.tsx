@@ -21,7 +21,8 @@ import { useNav } from '../lib/store'
 import type { Production } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { Facade, FACADE, HandNote } from '../components/deco'
+import { Facade, FACADE } from '../components/deco'
+import { Photo } from '../components/Photo'
 import { Avatar, Button, Chip, CommunityScore, DemoBadge, EmptyState, Sheet, StatusPill } from '../components/ui'
 
 type DateFilter = 'any' | 'today' | 'weekend' | 'week'
@@ -112,9 +113,7 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
         <h1 className="font-display text-[44px] uppercase leading-[0.9] md:text-[56px]">
           {tab === 'teatros' ? 'Teatros' : tab === 'archivo' ? 'Archivo' : 'Cartelera'}
         </h1>
-        <HandNote className="mb-1 text-[20px]" arrow="left">
-          {tab === 'teatros' ? 'los foros de la ciudad' : tab === 'archivo' ? 'lo que ya pasó' : 'todo lo que hay'}
-        </HandNote>
+        <span className="mb-1 hidden text-sm text-gris sm:block">{tab === 'teatros' ? 'Los foros de la ciudad' : tab === 'archivo' ? 'Temporadas que ya terminaron' : 'Todo lo que hay en la ciudad'}</span>
       </div>
 
       <div className="sticky top-[env(safe-area-inset-top,0px)] z-20 -mx-4 bg-crema/95 px-4 pb-2 pt-1 backdrop-blur md:mx-0 md:px-0">
@@ -438,9 +437,12 @@ function VenueList() {
         const { cartelera } = productionsAtVenue(v.id)
         return (
           <button key={v.id} onClick={() => nav.go({ name: 'venue', id: v.id })} className="paper group flex flex-col overflow-hidden !p-0 text-left" style={{ rotate: `${((i % 3) - 1) * 0.5}deg` }}>
-            <div className="wall px-4 pt-4 transition-transform">
-              <Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} />
-            </div>
+            <Photo id={v.photo} alt={`Foto de referencia de ${v.name}`} w={800} className="aspect-[16/9]" fallback={<div className="wall absolute inset-0 px-4 pt-4"><Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} /></div>}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <span className="absolute bottom-2 left-3 rounded-sm px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-papel" style={{ background: v.color === '#E9B321' || v.color === '#E76F91' ? '#191919' : v.color }}>
+                {v.neighborhood}
+              </span>
+            </Photo>
             <div className="flex items-center justify-between gap-3 p-4">
               <div className="min-w-0">
                 <div className="font-display text-[22px] uppercase leading-none">{v.name}</div>

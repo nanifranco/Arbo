@@ -234,8 +234,11 @@ export function Skyline({ className = '', ink = INK, showTaxi = true }: { classN
 }
 
 // ——— Retrato en semitono (sin foto real) ———
-export function HalftonePortrait({ seed, bg = '#23452E', ink = '#E9B321', className = '', label }: { seed: string; bg?: string; ink?: string; className?: string; label?: string }) {
+export function HalftonePortrait({ seed, bg: accentBg = '#23452E', className = '', label }: { seed: string; bg?: string; ink?: string; className?: string; label?: string }) {
   const id = useId().replace(/:/g, '')
+  // Retrato monocromo tipo foto de archivo; el color de acento solo aparece como franja inferior
+  const bg = '#2B2825'
+  const ink = '#E8DFCD'
   const h = hash(seed)
   const hair = h % 4
   const tilt = (h % 7) - 3
@@ -253,11 +256,11 @@ export function HalftonePortrait({ seed, bg = '#23452E', ink = '#E9B321', classN
   return (
     <svg viewBox="0 0 200 240" className={`block h-auto w-full ${className}`} role="img" aria-label={label ?? 'Retrato ilustrado'}>
       <defs>
-        <pattern id={`d${id}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
-          <circle cx="3.5" cy="3.5" r="2.4" fill={ink} />
+        <pattern id={`d${id}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <circle cx="2" cy="2" r="1.35" fill={ink} />
         </pattern>
-        <pattern id={`f${id}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
-          <circle cx="3.5" cy="3.5" r="1.1" fill={ink} />
+        <pattern id={`f${id}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+          <circle cx="2" cy="2" r=".55" fill={ink} />
         </pattern>
         <radialGradient id={`g${id}`} cx="35%" cy="25%" r="80%">
           <stop offset="0" stopColor="#fff" />
@@ -271,7 +274,7 @@ export function HalftonePortrait({ seed, bg = '#23452E', ink = '#E9B321', classN
       <rect width="200" height="240" fill={`url(#f${id})`} opacity=".35" />
       <g fill={`url(#d${id})`}>{head}</g>
       <rect width="200" height="240" fill={bg} mask={`url(#m${id})`} opacity=".55" />
-      <circle cx={150 + (h % 20)} cy={46} r={22} fill="#E76F91" opacity=".85" style={{ mixBlendMode: 'multiply' }} />
+      <rect y="232" width="200" height="8" fill={accentBg} />
     </svg>
   )
 }

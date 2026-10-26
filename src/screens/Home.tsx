@@ -22,9 +22,11 @@ import {
 import { useNav, useStore } from '../lib/store'
 import type { PosterMotif } from '../data/types'
 import { Icon } from '../components/Icon'
-import { Motif, Poster } from '../components/Poster'
+import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
-import { HandNote, Marquee, PaintedSign, Skyline, Stamp, Tape } from '../components/deco'
+import { Photo } from '../components/Photo'
+import { CITY_PHOTOS } from '../data/demo'
+import { Marquee, Stamp, Tape } from '../components/deco'
 import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
 export function Home() {
@@ -51,68 +53,45 @@ export function Home() {
         </span>
       </header>
 
-      {/* ——— Héroe: la pared de hoy ——— */}
+      {/* ——— Héroe: foto de escena de la obra destacada ——— */}
       <section aria-labelledby="destacada" className="-mx-4 md:mx-0">
         <div className="relative overflow-hidden md:rounded-2xl">
-          <div className="wall relative grid min-h-[470px] md:min-h-[440px] md:grid-cols-[1.1fr_1fr]">
-            {/* collage */}
-            <div className="relative h-[300px] md:h-auto">
-              <div className="absolute left-[4%] top-[10%] w-[30%] -rotate-6 opacity-95 md:w-[26%]">
-                <Poster production={wallPosters[0]} />
-                <Tape tone="clear" />
-              </div>
-              <div className="absolute right-[3%] top-[4%] w-[28%] rotate-6 md:right-[6%] md:w-[24%]">
-                <Poster production={wallPosters[1]} />
-              </div>
-              <div className="absolute bottom-[-6%] right-[8%] w-[26%] -rotate-3 md:bottom-[4%] md:w-[22%]">
-                <Poster production={wallPosters[2]} />
-                <Tape tone="pink" />
-              </div>
-              <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="absolute left-1/2 top-[6%] w-[44%] -translate-x-1/2 rotate-[-1.5deg] md:top-[8%] md:w-[38%]" aria-label={`Ver ${featured.title}`}>
-                <div className="shadow-[0_22px_34px_-16px_rgba(0,0,0,.75)]">
-                  <Poster production={featured} />
-                </div>
-                <Tape />
-              </button>
-              <div className="absolute bottom-[4%] left-[3%] w-[34%] min-w-[128px] md:bottom-[8%] md:left-[4%] md:w-[30%]">
-                <PaintedSign lines={['Obras', 'hoy']} bg="#B71C1C" fg="#FBF8F2" rotate={-5} />
-              </div>
-            </div>
-
-            {/* ficha */}
-            <div className="relative z-10 flex flex-col justify-end px-4 pb-5 md:justify-center md:px-8 md:py-8">
-              <div className="paper relative -rotate-[0.6deg] p-4 md:p-6">
-                <Tape style={{ left: '80%' }} />
+          <Photo id={featured.photos?.[0]} alt={`Escena de referencia para ${featured.title}`} w={1600} className="h-[560px] md:h-[520px]" grade="warm" fallback={<div className="absolute inset-0" style={{ background: featured.poster.bg }} />}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 grid gap-6 p-5 md:grid-cols-[1fr_auto] md:items-end md:p-10">
+              <div className="max-w-2xl text-papel">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="eyebrow text-rojo">Destacada de la semana</span>
-                  <DemoBadge />
+                  <span className="rounded-sm bg-rojo px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest">Destacada de la semana</span>
+                  <DemoBadge className="!border-papel/60 !text-papel" />
                 </div>
-                <h1 id="destacada" className="mt-2 font-marker text-[30px] leading-[1.02] md:text-[40px]">
+                <h1 id="destacada" className="mt-3 font-marker text-[42px] leading-[0.98] md:text-[64px]">
                   {featured.title}
                 </h1>
-                <p className="mt-1 text-[13px] text-gris">
-                  {featured.company} · {featured.genres.join(' / ')}
+                <p className="mt-2 text-[14px] text-papel/80">
+                  {featured.company} · {featured.genres.join(' / ')} · {fv.name}, {fv.neighborhood}
                 </p>
-                <p className="mt-3 line-clamp-3 text-[14.5px] leading-relaxed text-grafito">{featured.synopsis}</p>
-                <div className="mt-3 flex items-center gap-1.5 text-[13px] font-semibold text-verde">
-                  <Icon name="pin" size={15} /> {fv.name}, {fv.neighborhood}
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <p className="mt-3 line-clamp-2 max-w-xl text-[15px] leading-relaxed text-papel/90 md:line-clamp-3">{featured.synopsis}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
                   {nextShows.map((s) => (
-                    <span key={s.date + s.time} className="ticket px-2.5 py-1 font-mono text-[12px] font-bold" style={{ ['--notch' as string]: '50%' }}>
-                      {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-rojo">{s.time}</span>
+                    <span key={s.date + s.time} className="rounded border border-papel/35 bg-black/30 px-2.5 py-1 font-mono text-[12px] font-bold backdrop-blur-sm">
+                      {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-amarillo">{s.time}</span>
                     </span>
                   ))}
                 </div>
-                <div className="mt-4 flex items-center gap-3">
-                  <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="inline-flex items-center gap-2 rounded-full bg-rojo px-5 py-2.5 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
-                    Ver obra <Icon name="arrow" size={16} />
+                <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="mt-5 inline-flex items-center gap-2 rounded-full bg-rojo px-6 py-3 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
+                  Ver obra y funciones <Icon name="arrow" size={16} />
+                </button>
+              </div>
+              <div className="hidden gap-3 md:flex">
+                {wallPosters.slice(0, 2).map((p, i) => (
+                  <button key={p.id} onClick={() => nav.go({ name: 'production', id: p.id })} className="w-[120px] shadow-[0_16px_30px_-12px_rgba(0,0,0,.9)] transition-transform hover:-translate-y-1" style={{ rotate: `${i ? 3 : -2}deg` }} aria-label={`Ver ${p.title}`}>
+                    <Poster production={p} />
                   </button>
-                  <HandNote className="text-[19px]">¡no te la pierdas!</HandNote>
-                </div>
+                ))}
               </div>
             </div>
-          </div>
+          </Photo>
         </div>
         <Marquee items={['Obras', 'Gente', 'Espacios', 'Historias', 'CDMX', 'Teatro para vivir la ciudad']} />
       </section>
@@ -246,11 +225,15 @@ export function Home() {
         </section>
       </div>
 
-      <footer className="mt-4">
-        <Skyline />
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-tinta pt-3">
-          <span className="font-marker text-lg">Teatro para vivir la ciudad</span>
-          <DemoBadge label="Datos de demostración" />
+      <footer className="-mx-4 md:mx-0">
+        <div className="grid grid-cols-3 gap-1 md:gap-2">
+          {[CITY_PHOTOS.bellasArtes, CITY_PHOTOS.jacarandas, CITY_PHOTOS.angel].map((id, i) => (
+            <Photo key={id} id={id} alt={['Palacio de Bellas Artes', 'Jacarandas en flor', 'Ángel de la Independencia'][i]} w={700} className="aspect-[4/5] md:rounded-md" />
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3 md:px-0">
+          <span className="font-marker text-xl">Teatro para vivir la ciudad</span>
+          <DemoBadge label="Datos de demostración · fotos de referencia: Unsplash" />
         </div>
       </footer>
     </div>
@@ -368,36 +351,32 @@ const GENRE_CARD: Record<string, { bg: string; fg: string; motif: PosterMotif }>
 function GenreDeck() {
   const nav = useNav()
   const all = allProductions().filter((p) => currentSeason(p).status !== 'archivo')
-  const genres = ALL_GENRES.map((g) => ({ g, n: all.filter((p) => p.genres.includes(g)).length })).filter((x) => x.n > 0)
+  const genres = ALL_GENRES.map((g) => ({ g, ps: all.filter((p) => p.genres.includes(g)) })).filter((x) => x.ps.length > 0)
   return (
     <section aria-labelledby="generos">
-      <SectionTitle id="generos" eyebrow="Elige tu carta">
+      <SectionTitle id="generos" eyebrow="Encuentra tu tipo de función">
         Explora por género
       </SectionTitle>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-        {genres.map(({ g, n }, i) => {
+      <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
+        {genres.map(({ g, ps }, i) => {
           const c = GENRE_CARD[g]
+          const p = ps[i % ps.length]
           return (
-            <button
-              key={g}
-              onClick={() => nav.go({ name: 'explore', tab: 'cartelera', genre: g })}
-              className="group relative aspect-[3/4] rounded-md bg-papel p-1.5 shadow-[0_6px_14px_-10px_rgba(0,0,0,.6)] transition-transform hover:-translate-y-1"
-              style={{ rotate: `${((i % 3) - 1) * 1.2}deg` }}
-            >
-              <div className="relative flex h-full flex-col rounded-[3px] border-2 border-tinta p-1.5" style={{ background: c.bg, color: c.fg }}>
-                <span className="font-display text-xl leading-none tabular">{n}</span>
-                <svg viewBox="-40 -40 80 80" className="mx-auto my-auto w-[62%]" aria-hidden="true">
-                  <Motif kind={c.motif} color={c.fg} accent={c.bg === '#F5F0E6' ? '#E76F91' : c.fg === '#191919' ? '#F5F0E6' : '#E9B321'} />
-                </svg>
-                <span className="block border-t-2 pt-1 text-center font-display text-[13px] uppercase leading-none tracking-wide sm:text-[15px]" style={{ borderColor: c.fg }}>
-                  {g}
-                </span>
-              </div>
+            <button key={g} onClick={() => nav.go({ name: 'explore', tab: 'cartelera', genre: g })} className="group relative w-[150px] shrink-0 overflow-hidden rounded-md text-left md:w-auto">
+              <Photo id={p.photos?.[1] ?? p.photos?.[0]} alt="" w={500} grade="mono" className="aspect-[4/5]" fallback={<div className="absolute inset-0" style={{ background: c.bg }} />}>
+                <div className="absolute inset-0 mix-blend-multiply transition-opacity group-hover:opacity-70" style={{ background: c.bg === '#F5F0E6' ? '#8A8073' : c.bg }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-3 text-papel">
+                  <div className="font-display text-[26px] uppercase leading-none">{g}</div>
+                  <div className="mt-1 text-[12px] font-semibold text-papel/85">
+                    {ps.length} {ps.length === 1 ? 'obra' : 'obras'}
+                  </div>
+                </div>
+              </Photo>
             </button>
           )
         })}
       </div>
-      <p className="mt-3 text-xs text-gris">El número de cada carta es cuántas obras hay en cartelera o por estrenar de ese género.</p>
     </section>
   )
 }

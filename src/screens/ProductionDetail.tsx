@@ -22,7 +22,8 @@ import { useNav, useStore } from '../lib/store'
 import type { CommunityReview, Production } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { HalftonePortrait, HandNote, isLight, Stamp, Tape } from '../components/deco'
+import { HalftonePortrait, Stamp, Tape } from '../components/deco'
+import { Photo } from '../components/Photo'
 import { Avatar, Button, DemoBadge, EmptyState, PosterCard, ScreenHeader, SectionTitle, Stars, StatusPill } from '../components/ui'
 import { ListPicker } from './Lists'
 
@@ -53,7 +54,7 @@ function Detail({ p }: { p: Production }) {
   const watching = store.watchlist.includes(p.id)
   const fav = store.favorites.includes(p.id)
   const seen = mine.length > 0
-  const { bg, fg, accent } = p.poster
+  const { bg } = p.poster
   const friends = allCommunityReviews().filter((r) => r.productionId === p.id && store.follows.includes(r.userId))
   const related = relatedTo(p, 5)
 
@@ -72,16 +73,15 @@ function Detail({ p }: { p: Production }) {
       <ScreenHeader title={p.title} sub={venue.name} />
 
       {/* ——— Héroe con los colores del cartel ——— */}
-      <section className="relative -mx-4 -mt-4 overflow-hidden md:mx-0 md:mt-0 md:rounded-2xl" style={{ background: bg, color: fg }}>
-        <div className="halftone absolute inset-0 opacity-[.13]" style={{ color: fg }} aria-hidden="true" />
-        <div className="absolute inset-0" style={{ backgroundImage: 'var(--grain)' }} aria-hidden="true" />
-        <div className="absolute -right-16 -top-16 size-72 rounded-full opacity-40" style={{ background: accent }} aria-hidden="true" />
-        <div className="relative grid gap-6 px-5 pb-8 pt-7 md:grid-cols-[250px_1fr] md:items-end md:gap-10 md:p-10">
-          <div className="relative mx-auto w-[58%] max-w-[240px] -rotate-2 md:mx-0 md:w-full">
-            <div className="shadow-[0_26px_40px_-18px_rgba(0,0,0,.75)]">
+      <section className="relative -mx-4 -mt-4 overflow-hidden bg-tinta text-papel md:mx-0 md:mt-0 md:rounded-2xl">
+        <Photo id={p.photos?.[0]} alt={`Escena de referencia para ${p.title}`} w={1600} grade="warm" className="!absolute inset-0" fallback={<div className="absolute inset-0" style={{ background: bg }} />} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" aria-hidden="true" />
+        <div className="relative grid gap-6 px-5 pb-8 pt-40 md:grid-cols-[230px_1fr] md:items-end md:gap-10 md:p-10 md:pt-56">
+          <div className="relative hidden w-full md:block">
+            <div className="shadow-[0_26px_40px_-18px_rgba(0,0,0,.9)] ring-1 ring-white/10">
               <Poster production={p} />
             </div>
-            <Tape />
             {status !== 'cartelera' && (
               <div className="absolute -right-6 bottom-6">
                 <Stamp color={status === 'archivo' ? '#191919' : '#B71C1C'} rotate={-12} size="lg" animate>
@@ -93,15 +93,15 @@ function Detail({ p }: { p: Production }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <StatusPill status={status} />
-              <DemoBadge className={isLight(bg) ? '' : '!border-current !text-current'} />
+              <DemoBadge className="!border-papel/60 !text-papel" />
             </div>
-            <h1 className="mt-3 font-marker text-[38px] leading-[0.98] md:text-[60px]">{p.title}</h1>
+            <h1 className="mt-3 font-marker text-[40px] leading-[0.98] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[64px]">{p.title}</h1>
             <p className="mt-2 text-[15px] opacity-90">
               {p.company} · {getWork(p.workId)?.author}
             </p>
             <div className="mt-4 flex flex-wrap gap-1.5">
               {p.genres.map((g) => (
-                <span key={g} className="rounded-sm px-2 py-0.5 text-[12px] font-bold" style={{ background: fg, color: bg }}>
+                <span key={g} className="rounded-sm bg-papel px-2 py-0.5 text-[12px] font-bold text-tinta">
                   {g}
                 </span>
               ))}
@@ -113,7 +113,7 @@ function Detail({ p }: { p: Production }) {
                 ['Duración', `${p.durationMin} min`],
                 ['Clasificación', p.age],
               ].map(([k, v]) => (
-                <div key={k} className="rounded-md px-3 py-2" style={{ background: isLight(bg) ? 'rgba(255,255,255,.45)' : 'rgba(0,0,0,.22)' }}>
+                <div key={k} className="rounded-md border border-white/15 bg-black/35 px-3 py-2 backdrop-blur-sm">
                   <dt className="text-[10px] font-bold uppercase tracking-widest opacity-75">{k}</dt>
                   <dd className="mt-0.5 font-mono text-[13px] font-bold leading-tight">
                     {k === 'Teatro' ? (
@@ -152,6 +152,8 @@ function Detail({ p }: { p: Production }) {
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="flex min-w-0 flex-col gap-6">
+          <Gallery p={p} />
+
           {seen && (
             <button onClick={() => nav.tab('diary')} className="ticket flex items-stretch overflow-hidden text-left" style={{ ['--notch' as string]: '82%' }}>
               <div className="grid w-16 shrink-0 place-items-center bg-verde text-papel">
@@ -590,7 +592,6 @@ function Reviews({ p }: { p: Production }) {
       ) : (
         list.map((r) => <ReviewCard key={r.id} r={r} />)
       )}
-      {list.length > 0 && <HandNote arrow="up">¿y tú qué opinas? toca “La vi”</HandNote>}
     </div>
   )
 }
@@ -641,3 +642,49 @@ export function ReviewCard({ r, showProduction = false }: { r: CommunityReview; 
   )
 }
 
+
+// ——— Galería de fotos de escena ———
+
+function Gallery({ p }: { p: Production }) {
+  const [open, setOpen] = useState<number | null>(null)
+  const photos = p.photos ?? []
+  if (!photos.length) return null
+  return (
+    <section aria-label="Fotos de escena">
+      <div className="mb-2 flex items-baseline justify-between">
+        <h2 className="font-display text-[22px] uppercase leading-none">Fotos de escena</h2>
+        <span className="text-[11px] text-gris">Fotos de referencia (Unsplash), no de esta producción</span>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5 md:gap-2">
+        {photos.map((id, i) => (
+          <button key={id} onClick={() => setOpen(i)} className={`group overflow-hidden rounded-md ${i === 0 ? 'col-span-2 row-span-2' : ''}`} aria-label={`Ver foto ${i + 1} de ${photos.length}`}>
+            <Photo id={id} alt={`Foto de referencia ${i + 1}`} w={i === 0 ? 1100 : 600} className={`${i === 0 ? 'aspect-[4/3] h-full' : 'aspect-[4/3]'} transition-transform duration-500 group-hover:scale-[1.03]`} />
+          </button>
+        ))}
+      </div>
+      {open !== null && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/95 p-4 pb-[calc(16px+env(safe-area-inset-bottom,0px))] pt-[calc(16px+env(safe-area-inset-top,0px))]" role="dialog" aria-modal="true" aria-label="Galería" onClick={() => setOpen(null)}>
+          <div className="flex items-center justify-between text-papel">
+            <span className="font-mono text-sm">
+              {open + 1} / {photos.length} · {p.title}
+            </span>
+            <button className="grid size-10 place-items-center rounded-full hover:bg-white/10" aria-label="Cerrar">
+              <Icon name="x" />
+            </button>
+          </div>
+          <div className="relative my-4 flex-1" onClick={(e) => e.stopPropagation()}>
+            <Photo id={photos[open]} alt={`Foto de referencia ${open + 1}`} w={1800} className="absolute inset-0 !bg-transparent" imgClassName="!object-contain" />
+          </div>
+          <div className="flex justify-center gap-3" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setOpen((open + photos.length - 1) % photos.length)} className="grid size-11 place-items-center rounded-full bg-white/10 text-papel hover:bg-white/20" aria-label="Foto anterior">
+              <Icon name="back" />
+            </button>
+            <button onClick={() => setOpen((open + 1) % photos.length)} className="grid size-11 place-items-center rounded-full bg-white/10 text-papel hover:bg-white/20" aria-label="Foto siguiente">
+              <Icon name="next" />
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}

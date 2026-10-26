@@ -16,7 +16,8 @@ import { useNav } from '../lib/store'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
-import { Facade, FACADE, HalftonePortrait, HandNote, SeatMap, Stamp, Tape } from '../components/deco'
+import { Photo } from '../components/Photo'
+import { Facade, FACADE, HalftonePortrait, SeatMap, Stamp, Tape } from '../components/deco'
 import { Chip, DemoBadge, EmptyState, PosterCard, ScreenHeader, SectionTitle, StatusPill } from '../components/ui'
 
 // ——— Perfil de artista ———
@@ -172,21 +173,18 @@ export function VenueProfile({ id }: { id: string }) {
     <div className="flex flex-col gap-10 pb-10">
       <ScreenHeader title={v.name} sub={`${v.neighborhood}, ${v.alcaldia}`} />
 
-      <header className="wall relative -mx-4 -mt-4 overflow-hidden md:mx-0 md:mt-0 md:rounded-2xl">
-        <div className="grid items-end gap-4 px-5 pt-6 md:grid-cols-[1.2fr_1fr] md:px-10 md:pt-10">
-          <div className="order-2 pb-6 md:order-1 md:pb-10">
-            <div className="flex flex-wrap items-center gap-2">
-              <Stamp size="sm" color="#23452E" rotate={-3}>
-                {v.neighborhood}
-              </Stamp>
-              <DemoBadge />
-            </div>
-            <h1 className="mt-3 font-marker text-[44px] leading-[0.95] md:text-[64px]">{v.name}</h1>
-            <p className="mt-3 max-w-[56ch] text-[15.5px] leading-relaxed text-grafito">{v.description}</p>
+      <header className="relative -mx-4 -mt-4 overflow-hidden bg-tinta text-papel md:mx-0 md:mt-0 md:rounded-2xl">
+        <Photo id={v.photo} alt={`Foto de referencia de ${v.name}`} w={1600} grade="warm" className="!absolute inset-0" fallback={<div className="wall absolute inset-0 flex items-start justify-center px-10 pt-6 opacity-60"><Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} className="max-w-md" /></div>} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10" aria-hidden="true" />
+        <div className="relative px-5 pb-8 pt-48 md:px-10 md:pb-10 md:pt-64">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-sm px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest" style={{ background: v.color === '#191919' ? '#23452E' : v.color, color: v.color === '#E9B321' || v.color === '#E76F91' ? '#191919' : '#FBF8F2' }}>
+              {v.neighborhood} · {v.alcaldia}
+            </span>
+            <DemoBadge className="!border-papel/60 !text-papel" />
           </div>
-          <div className="order-1 md:order-2">
-            <Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} />
-          </div>
+          <h1 className="mt-3 font-marker text-[46px] leading-[0.95] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[68px]">{v.name}</h1>
+          <p className="mt-3 max-w-[58ch] text-[15.5px] leading-relaxed text-papel/90">{v.description}</p>
         </div>
       </header>
 
@@ -317,9 +315,7 @@ export function TheaterMap() {
       <ScreenHeader title="Mapa de teatros" sub="Ciudad de México" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-display text-[44px] uppercase leading-[0.9]">La ciudad es teatro</h1>
-        <HandNote arrow="down" className="text-[19px]">
-          toca un foro
-        </HandNote>
+        <span className="text-sm text-gris">Toca un teatro para ver su cartelera</span>
       </div>
       <div className="flex flex-wrap gap-2">
         <Chip active={filter === 'cartelera'} onClick={() => setFilter('cartelera')}>
@@ -378,9 +374,7 @@ export function TheaterMap() {
         <div className="flex flex-col gap-4">
           {sel && selAt ? (
             <div className="paper overflow-hidden !p-0">
-              <div className="wall px-4 pt-4">
-                <Facade name={sel.name} color={sel.color} style={FACADE[sel.id] ?? 'bodega'} />
-              </div>
+              <Photo id={sel.photo} alt={`Foto de referencia de ${sel.name}`} w={800} className="aspect-[16/9]" fallback={<div className="wall absolute inset-0 px-4 pt-4"><Facade name={sel.name} color={sel.color} style={FACADE[sel.id] ?? 'bodega'} /></div>} />
               <div className="flex flex-col gap-3 p-4">
                 <div>
                   <div className="font-display text-[26px] uppercase leading-none">{sel.name}</div>

@@ -5,7 +5,7 @@ import type { DiaryEntry } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
-import { HalftonePortrait, HandNote, Stamp } from '../components/deco'
+import { HalftonePortrait, Stamp } from '../components/deco'
 import { Button, EmptyState, Stars } from '../components/ui'
 
 type View = 'boletos' | 'calendario' | 'pared' | 'resenas'
@@ -23,9 +23,9 @@ export function Diary() {
       <header className="flex items-end justify-between gap-3 pt-3">
         <div>
           <h1 className="font-display text-[44px] uppercase leading-[0.9] md:text-[56px]">Mi diario</h1>
-          <HandNote className="mt-1 text-[20px]">
-            {entries.length} {entries.length === 1 ? 'función vivida' : 'funciones vividas'}
-          </HandNote>
+          <p className="mt-1 text-sm text-gris tabular">
+            {entries.length} {entries.length === 1 ? 'función registrada' : 'funciones registradas'}
+          </p>
         </div>
         <button onClick={() => nav.go({ name: 'watchlist' })} className="inline-flex items-center gap-1.5 rounded-full border border-linea bg-papel px-3 py-2 text-[13px] font-semibold hover:border-grafito">
           <Icon name="bookmark" size={16} /> Por ver <span className="tabular text-gris">{store.watchlist.length}</span>
