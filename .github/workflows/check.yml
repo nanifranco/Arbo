@@ -16,7 +16,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: mkdir -p shots && node scripts/check-photos.mjs | tee shots/fotos.txt
-      - run: npx -y playwright@1.48.2 install --with-deps chromium && npm i --no-save playwright@1.48.2 && node scripts/screens.mjs
+      - run: npx -y playwright@1.48.2 install --with-deps chromium && npm i --no-save playwright@1.48.2 && node scripts/screens.mjs && node scripts/live.mjs https://nanifranco.github.io/Arbo/ | tee shots/live.txt
       - name: Publicar capturas en la rama revision
         run: |
           cd shots

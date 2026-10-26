@@ -8,8 +8,8 @@ Prototipo interactivo de ÁRBO, una plataforma dedicada al teatro de la Ciudad d
 
 ```bash
 npm install
-npm run dev      # servidor local
-npm run build    # genera dist/index.html autocontenido
+npm run dev      # servidor local (abre /dev.html)
+npm run build    # genera index.html autocontenido (en dist/ y en la raíz para GitHub Pages)
 ```
 
 Stack: React 18 + TypeScript + Tailwind CSS 4 + Vite.
