@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { allCommunityReviews, getCommunityUser, getProduction } from '../lib/catalog'
 import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
-import { Avatar, Button, DemoBadge, EmptyState, Field, inputCls, PosterCard, ScreenHeader, SectionTitle, Sheet } from '../components/ui'
+import { HalftonePortrait, Sticker } from '../components/deco'
+import { getSeason, getVenue, currentSeason } from '../lib/catalog'
+import type { ReactNode } from 'react'
+import { Button, EmptyState, Field, inputCls, PosterCard, ScreenHeader, SectionTitle, Sheet } from '../components/ui'
 import { EntryCard } from './Diary'
 import { MyLists } from './Lists'
 import { MySuggestions } from './Suggest'
@@ -25,41 +28,26 @@ function OwnProfile() {
 
   return (
     <div className="flex flex-col gap-8 pb-10">
-      <header className="relative mt-3 overflow-hidden rounded-2xl bg-rosa p-5 md:p-7">
-        <div className="absolute -right-6 -top-10 font-marker text-[150px] leading-none text-tinta/10" aria-hidden="true">
-          ★
-        </div>
-        <div className="relative flex items-center gap-4">
-          <div className="-rotate-6 rounded-full border-[3px] border-papel shadow-md">
-            <Avatar name={user.name} color="#B71C1C" size={76} />
-          </div>
-          <div className="min-w-0">
-            <h1 className="truncate font-marker text-[28px] leading-tight md:text-4xl">{user.name}</h1>
-            <p className="font-mono text-sm">@{user.handle}</p>
-            {user.isDemo && <DemoBadge className="mt-1 !border-tinta/60 !text-tinta" label="Perfil demo" />}
-          </div>
-        </div>
-        {user.bio ? <p className="relative mt-4 max-w-xl text-[15px] leading-relaxed">{user.bio}</p> : <p className="relative mt-4 text-sm text-tinta/70">Agrega una descripción para que la comunidad sepa qué teatro te gusta.</p>}
-        <div className="relative mt-4 flex flex-wrap gap-2">
-          <Button variant="ink" icon="edit" onClick={() => setEditing(true)} className="!min-h-10">
-            Editar perfil
-          </Button>
-        </div>
-      </header>
-
-      <dl className="grid grid-cols-4 divide-x divide-linea rounded-xl border border-linea bg-papel text-center">
-        {[
+      <Credential
+        name={user.name}
+        handle={user.handle}
+        bio={user.bio || 'Agrega una descripción para que la comunidad sepa qué teatro te gusta.'}
+        color="#B71C1C"
+        demo={user.isDemo}
+        stats={[
           [store.diary.length, 'Vistas'],
           [reviews, 'Reseñas'],
           [user.isDemo ? 64 : 0, 'Seguidores'],
           [store.follows.length, 'Siguiendo'],
-        ].map(([v, l]) => (
-          <div key={l as string} className="px-1 py-3">
-            <dd className="font-slab text-2xl tabular">{v}</dd>
-            <dt className="text-[11px] text-gris">{l}</dt>
-          </div>
-        ))}
-      </dl>
+        ]}
+        action={
+          <Button variant="ink" icon="edit" onClick={() => setEditing(true)} className="!min-h-10">
+            Editar perfil
+          </Button>
+        }
+      />
+
+      <Badges />
 
       <section>
         <SectionTitle action={store.favorites.length ? 'Ver todas' : undefined} onAction={() => nav.tab('diary')}>
@@ -182,33 +170,34 @@ function PublicProfile({ userId }: { userId: string }) {
   return (
     <div className="flex flex-col gap-6 pb-10">
       <ScreenHeader title={u.name} sub={`@${u.handle}`} />
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <Avatar name={u.name} color={u.color} size={72} />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="font-marker text-3xl leading-tight">{u.name}</h1>
-            <DemoBadge />
-          </div>
-          <p className="font-mono text-sm text-grafito">@{u.handle}</p>
-          <p className="mt-2 text-[15px]">{u.bio}</p>
-          <p className="mt-2 text-sm text-gris">
-            <b className="tabular text-tinta">{u.followers + (following ? 1 : 0)}</b> seguidores · <b className="tabular text-tinta">{reviews.length}</b> reseñas
-          </p>
-        </div>
-        <Button
-          variant={following ? 'secondary' : 'primary'}
-          icon={following ? 'check' : 'plus'}
-          onClick={() => {
-            const now = store.toggleFollow(u.id)
-            store.notify(now ? `Ahora sigues a ${u.name.split(' ')[0]}` : `Dejaste de seguir a ${u.name.split(' ')[0]}`, now ? 'ok' : 'info')
-          }}
-        >
-          {following ? 'Siguiendo' : 'Seguir'}
-        </Button>
-      </header>
+      <Credential
+        name={u.name}
+        handle={u.handle}
+        bio={u.bio}
+        color={u.color}
+        demo
+        stats={[
+          [reviews.length, 'Reseñas'],
+          [u.followers + (following ? 1 : 0), 'Seguidores'],
+          [new Set(reviews.map((r) => r.productionId)).size, 'Obras'],
+          [reviews.length ? Number((reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1)) : 0, 'Promedio'],
+        ]}
+        action={
+          <Button
+            variant={following ? 'secondary' : 'primary'}
+            icon={following ? 'check' : 'plus'}
+            onClick={() => {
+              const now = store.toggleFollow(u.id)
+              store.notify(now ? `Ahora sigues a ${u.name.split(' ')[0]}` : `Dejaste de seguir a ${u.name.split(' ')[0]}`, now ? 'ok' : 'info')
+            }}
+          >
+            {following ? 'Siguiendo' : 'Seguir'}
+          </Button>
+        }
+      />
       <section>
         <SectionTitle>Reseñas</SectionTitle>
-        <div className="flex flex-col gap-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {reviews.map((r) => (
             <ReviewCard key={r.id} r={r} showProduction />
           ))}
@@ -225,7 +214,7 @@ export function Watchlist() {
   return (
     <div className="pb-10">
       <ScreenHeader title="Por ver" />
-      <h1 className="font-marker text-[32px] leading-none">Por ver</h1>
+      <h1 className="font-display text-[44px] uppercase leading-[0.9] md:text-[56px]">Por ver</h1>
       <p className="mt-1 text-sm text-gris">Obras que guardaste para ir después. Cuando registres una en tu diario, sale de esta lista.</p>
       <div className="mt-6">
         {items.length === 0 ? (
@@ -250,5 +239,95 @@ export function Watchlist() {
         )}
       </div>
     </div>
+  )
+}
+
+
+// ——— Credencial ÁRBO ———
+
+function Credential({ name, handle, bio, color, stats, action, demo }: { name: string; handle: string; bio: string; color: string; stats: [number, string][]; action?: ReactNode; demo?: boolean }) {
+  const bars = Array.from(handle + name).map((c, i) => ((c.charCodeAt(0) * (i + 3)) % 4) + 1)
+  return (
+    <section aria-label="Credencial" className="relative mt-3">
+      <div className="relative overflow-hidden rounded-2xl bg-rosa shadow-[0_18px_34px_-22px_rgba(0,0,0,.7)]" style={{ backgroundImage: 'var(--grain)' }}>
+        <div className="halftone absolute -right-10 -top-10 size-64 rounded-full text-tinta opacity-15" aria-hidden="true" />
+        <div className="flex items-center justify-between bg-tinta px-5 py-2 text-papel">
+          <span className="font-marker text-xl leading-none text-rojo">ÁRBO<span className="text-amarillo">✱</span></span>
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em]">Credencial de público</span>
+        </div>
+        <div className="relative grid gap-5 p-5 sm:grid-cols-[150px_1fr] md:p-7">
+          <div className="relative mx-auto w-[130px] -rotate-3 bg-papel p-1.5 pb-5 shadow-lg sm:mx-0 sm:w-full">
+            <HalftonePortrait seed={handle} bg={color} ink="#F6E3A8" label={`Foto de credencial de ${name}`} />
+            <span className="absolute bottom-1 left-2 font-hand text-[15px] text-grafito">@{handle}</span>
+          </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="eyebrow text-tinta/70">Nombre</span>
+              {demo && <span className="rounded-sm border border-dashed border-tinta/60 px-1.5 font-mono text-[10px] font-bold uppercase">Perfil demo</span>}
+            </div>
+            <h1 className="font-display text-[42px] uppercase leading-[0.9] md:text-[56px]">{name}</h1>
+            <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-tinta/85">{bio}</p>
+            <dl className="mt-4 grid grid-cols-4 gap-2">
+              {stats.map(([v, l]) => (
+                <div key={l} className="rounded-md bg-papel/80 px-2 py-1.5 text-center">
+                  <dd className="font-display text-[26px] leading-none tabular">{v}</dd>
+                  <dt className="text-[10px] font-bold uppercase tracking-wider text-grafito">{l}</dt>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
+              {action}
+              <div className="flex h-9 items-stretch gap-[2px]" aria-hidden="true">
+                {bars.slice(0, 34).map((w, i) => (
+                  <span key={i} className="bg-tinta" style={{ width: w }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ——— Insignias ———
+
+function Badges() {
+  const store = useStore()
+  const prods = store.diary.map((d) => getProduction(d.productionId)).filter(Boolean)
+  const venues = new Set(store.diary.map((d) => {
+    const p = getProduction(d.productionId)!
+    return (getSeason(p, d.seasonId) ?? p.seasons[0]).venueId
+  }))
+  const alcaldias = new Set([...venues].map((v) => getVenue(v)?.alcaldia))
+  const reviews = store.diary.filter((d) => d.review).length
+  const badges: { label: string; desc: string; have: number; need: number; bg: string; fg: string }[] = [
+    { label: 'Primera llamada', desc: 'Registra tu primera función', have: store.diary.length, need: 1, bg: '#E9B321', fg: '#191919' },
+    { label: 'Foro hopper', desc: 'Visita 3 teatros distintos', have: venues.size, need: 3, bg: '#E76F91', fg: '#191919' },
+    { label: 'Pluma afilada', desc: 'Escribe 3 reseñas', have: reviews, need: 3, bg: '#B71C1C', fg: '#FBF8F2' },
+    { label: 'Archivista', desc: 'Registra una obra del archivo', have: prods.filter((p) => currentSeason(p!).status === 'archivo').length, need: 1, bg: '#191919', fg: '#E9B321' },
+    { label: 'Clásicos', desc: 'Ve una obra clásica', have: prods.filter((p) => p!.genres.includes('Clásico')).length, need: 1, bg: '#D2582A', fg: '#FBF8F2' },
+    { label: 'Chilanga de butaca', desc: 'Ve teatro en 3 alcaldías', have: alcaldias.size, need: 3, bg: '#23452E', fg: '#FBF8F2' },
+    { label: 'Diez funciones', desc: 'Llega a 10 funciones', have: store.diary.length, need: 10, bg: '#21418F', fg: '#FBF8F2' },
+    { label: 'Curaduría', desc: 'Crea tu primera lista', have: store.lists.length, need: 1, bg: '#7A5BA6', fg: '#FBF8F2' },
+  ]
+  const earned = badges.filter((b) => b.have >= b.need).length
+  return (
+    <section>
+      <SectionTitle eyebrow={`${earned} de ${badges.length} conseguidas`}>Insignias</SectionTitle>
+      <div className="wall grid grid-cols-4 gap-3 rounded-xl p-4 sm:grid-cols-8">
+        {badges.map((b, i) => {
+          const ok = b.have >= b.need
+          return (
+            <div key={b.label} className="flex flex-col items-center gap-1.5 text-center" title={b.desc}>
+              <Sticker bg={ok ? b.bg : '#E8DFCD'} fg={ok ? b.fg : '#8A8073'} size={72} rotate={((i % 3) - 1) * 8} className={ok ? '' : 'opacity-70 grayscale'}>
+                {b.label}
+              </Sticker>
+              <span className="text-[11px] leading-tight text-grafito">{ok ? b.desc : `${Math.min(b.have, b.need)}/${b.need} · ${b.desc}`}</span>
+            </div>
+          )
+        })}
+      </div>
+    </section>
   )
 }

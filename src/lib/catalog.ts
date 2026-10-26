@@ -201,3 +201,52 @@ export function searchAll(q: string) {
     people: people.filter((p) => hit(p.name, ...p.roles)),
   }
 }
+
+// ——— Funciones por día ———
+
+export interface DayPerformance {
+  production: Production
+  season: Season
+  venue: Venue
+  time: string
+}
+
+/** Todas las funciones de un día, ordenadas por hora */
+export function performancesOn(date: Date): DayPerformance[] {
+  return productions
+    .flatMap((p) =>
+      p.seasons.flatMap((s) => performsOn(s, date).map((slot) => ({ production: p, season: s, venue: getVenue(s.venueId)!, time: slot.time }))),
+    )
+    .sort((a, b) => a.time.localeCompare(b.time))
+}
+
+export function addDays(d: Date, n: number) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
+}
+
+/** Producciones en cartelera que terminan en los próximos `days` días */
+export function closingSoon(days = 30) {
+  return productions
+    .map((p) => ({ p, ...currentSeason(p) }))
+    .filter((x) => x.status === 'cartelera')
+    .map((x) => ({ production: x.p, season: x.season, daysLeft: Math.round((parseISO(x.season.end).getTime() - TODAY.getTime()) / 86400000) }))
+    .filter((x) => x.daysLeft <= days)
+    .sort((a, b) => a.daysLeft - b.daysLeft)
+}
+
+export const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+
+/** Producciones parecidas: comparten género o personas */
+export function relatedTo(p: Production, limit = 6) {
+  const people = new Set(p.credits.map((c) => c.personId))
+  return productions
+    .filter((o) => o.id !== p.id)
+    .map((o) => ({
+      o,
+      score: o.genres.filter((g) => p.genres.includes(g)).length * 2 + o.credits.filter((c) => people.has(c.personId)).length + (o.company === p.company ? 2 : 0),
+    }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((x) => x.o)
+}

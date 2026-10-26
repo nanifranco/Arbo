@@ -164,7 +164,7 @@ export function ListDetail({ id }: { id: string }) {
         }
       />
       <p className="eyebrow text-gris">Lista · {items.length} {items.length === 1 ? 'obra' : 'obras'}</p>
-      <h1 className="mt-1 font-marker text-[32px] leading-tight">{list.name}</h1>
+      <h1 className="mt-1 font-display text-[44px] uppercase leading-[0.9]">{list.name}</h1>
       {list.description && <p className="mt-1 max-w-[60ch] text-[15px] text-grafito">{list.description}</p>}
 
       <div className="mt-6">

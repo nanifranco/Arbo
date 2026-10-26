@@ -42,7 +42,8 @@ src/
 
 - **La pared y la ficha:** la marca vive en carteles, rótulos y titulares; la interfaz es clara como un programa de mano.
 - **Color:** crema papel de fondo, rojo como identidad y acción principal, amarillo y rosa como acentos, verde para información secundaria.
-- **Tipografía:** Permanent Marker (marca y titulares), DM Sans (interfaz), Courier Prime (datos tipo boleto: fechas, horarios, precios).
+- **Tipografía (incluida en el proyecto, sin Google Fonts):** Permanent Marker (marca), Anton (letra de cartel: titulares y cifras), Caveat Brush (notas a mano), DM Sans (interfaz), Courier Prime (boletos y programa de mano).
+- **Recursos:** carteles generados (risografía, semitono, créditos), cinta, sellos, rótulos pintados, horizonte de la CDMX, fachadas, retratos en semitono y mapa ilustrado.
 
 ## Siguiente paso: base de datos
 

@@ -180,15 +180,20 @@ export function GenreTag({ genre }: { genre: string }) {
 
 // ——— Estructura ———
 
-export function SectionTitle({ children, action, onAction, id }: { children: ReactNode; action?: string; onAction?: () => void; id?: string }) {
+export function SectionTitle({ children, action, onAction, id, note, eyebrow }: { children: ReactNode; action?: string; onAction?: () => void; id?: string; note?: string; eyebrow?: string }) {
   return (
-    <div className="mb-3 flex items-end justify-between gap-3">
-      <h2 id={id} className="font-marker text-[22px] leading-tight text-tinta">
-        {children}
-      </h2>
+    <div className="mb-4 flex items-end justify-between gap-3">
+      <div className="min-w-0">
+        {eyebrow && <div className="eyebrow mb-1 text-gris">{eyebrow}</div>}
+        <h2 id={id} className="flex flex-wrap items-baseline gap-x-3 font-display text-[26px] uppercase leading-[0.95] tracking-[0.01em] text-tinta md:text-[30px]">
+          <span>{children}</span>
+          {note && <span className="-rotate-3 font-hand text-[22px] normal-case leading-none tracking-normal text-rojo">{note}</span>}
+        </h2>
+      </div>
       {action && (
-        <button onClick={onAction} className="shrink-0 text-[13px] font-semibold text-rojo hover:underline">
-          {action}
+        <button onClick={onAction} className="group inline-flex shrink-0 items-center gap-1 pb-0.5 text-[13px] font-bold text-rojo">
+          <span className="group-hover:underline">{action}</span>
+          <Icon name="arrow" size={15} />
         </button>
       )}
     </div>
@@ -215,14 +220,17 @@ export function ScreenHeader({ title, right, sub }: { title?: string; right?: Re
 
 export function EmptyState({ title, text, action, onAction, icon = 'ticket' }: { title: string; text: string; action?: string; onAction?: () => void; icon?: IconName }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-linea bg-papel/60 px-6 py-10 text-center">
-      <div className="mb-3 grid size-14 -rotate-6 place-items-center rounded-full bg-amarillo-claro text-tinta">
-        <Icon name={icon} size={26} />
+    <div className="wall relative flex flex-col items-center overflow-hidden rounded-xl px-6 py-10 text-center">
+      <div className="relative mb-4">
+        <div className="grid h-28 w-20 -rotate-3 place-items-center border-2 border-dashed border-grafito/40 bg-papel/50 text-grafito/60">
+          <Icon name={icon} size={30} />
+        </div>
+        <span className="tape" style={{ width: 54 }} />
       </div>
-      <h3 className="font-marker text-xl">{title}</h3>
-      <p className="mt-1 max-w-xs text-sm text-gris">{text}</p>
+      <h3 className="font-display text-2xl uppercase leading-none">{title}</h3>
+      <p className="mt-2 max-w-sm text-sm text-grafito">{text}</p>
       {action && (
-        <Button className="mt-4" onClick={onAction}>
+        <Button className="mt-5" onClick={onAction}>
           {action}
         </Button>
       )}
@@ -250,17 +258,22 @@ export function Avatar({ name, color, size = 40 }: { name: string; color: string
 
 // ——— Tarjetas de producción ———
 
-export function PosterCard({ production, width = 'w-[132px]', showVenue = true, badge }: { production: Production; width?: string; showVenue?: boolean; badge?: ReactNode }) {
+export function PosterCard({ production, width = 'w-[132px]', showVenue = true, badge, tilt = false }: { production: Production; width?: string; showVenue?: boolean; badge?: ReactNode; tilt?: boolean }) {
   const nav = useNav()
   const { season, status } = currentSeason(production)
   const venue = getVenue(season.venueId)
+  const rot = tilt ? ((production.title.length % 5) - 2) * 0.9 : 0
+  const daysLeft = Math.ceil((new Date(season.end).getTime() - Date.now()) / 86400000)
   return (
     <button onClick={() => nav.go({ name: 'production', id: production.id })} className={`group shrink-0 text-left ${width}`}>
-      <div className="relative overflow-hidden rounded-md shadow-[0_1px_0_rgba(0,0,0,.08),0_6px_14px_-8px_rgba(25,25,25,.45)] transition-transform group-hover:-translate-y-0.5">
-        <Poster production={production} />
-        <div className="absolute left-1.5 top-1.5">{badge ?? (status !== 'cartelera' && <StatusPill status={status} />)}</div>
+      <div className="poster-lift relative" style={{ rotate: `${rot}deg` }}>
+        <div className="overflow-hidden rounded-[3px] shadow-[0_1px_0_rgba(0,0,0,.08),0_10px_18px_-10px_rgba(25,25,25,.55)]">
+          <Poster production={production} />
+        </div>
+        {tilt && <span className="tape" style={{ width: '42%' }} />}
+        <div className="absolute left-1.5 top-1.5">{badge ?? (status !== 'cartelera' ? <StatusPill status={status} /> : daysLeft <= 21 && daysLeft >= 0 ? <span className="eyebrow inline-block -rotate-3 rounded-sm bg-amarillo px-1.5 py-0.5 !text-[9.5px] text-tinta shadow">Últimas funciones</span> : null)}</div>
       </div>
-      <div className="mt-2 line-clamp-2 text-[13px] font-bold leading-snug">{production.title}</div>
+      <div className="mt-2.5 line-clamp-2 text-[13.5px] font-bold leading-snug">{production.title}</div>
       {showVenue && venue && <div className="mt-0.5 truncate text-xs text-gris">{venue.name}</div>}
     </button>
   )

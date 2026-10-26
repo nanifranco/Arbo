@@ -79,7 +79,7 @@ export function Suggest({ initialTitle = '' }: { initialTitle?: string }) {
       <ScreenHeader title="Sugerir una obra" />
       <form onSubmit={submit} noValidate className="mx-auto flex max-w-xl flex-col gap-5">
         <div>
-          <h1 className="font-marker text-[30px] leading-tight">¿Falta una obra?</h1>
+          <h1 className="font-display text-[44px] uppercase leading-[0.9]">¿Falta una obra?</h1>
           <p className="mt-1 text-sm text-gris">El archivo incluye obras de cualquier país y época. Antes de publicarla, el equipo revisa que la información sea correcta.</p>
         </div>
 

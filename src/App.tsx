@@ -1,5 +1,6 @@
 import { NavProvider, StoreProvider, useNav, useStore, type Route, type Tab } from './lib/store'
 import { Icon, type IconName } from './components/Icon'
+import { Skyline } from './components/deco'
 import { Button, DemoBadge, Logo, ToastHost } from './components/ui'
 import { Welcome } from './screens/Welcome'
 import { Home } from './screens/Home'
@@ -61,7 +62,7 @@ function Shell() {
   return (
     <div className="min-h-screen md:flex">
       {/* Barra lateral en escritorio */}
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-6 border-r border-linea bg-papel/70 px-5 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-6 overflow-y-auto border-r-2 border-tinta bg-papel/80 px-5 py-6 md:flex">
         <button onClick={() => nav.tab('home')} className="w-fit" aria-label="Inicio">
           <Logo size="lg" />
         </button>
@@ -73,7 +74,7 @@ function Shell() {
                 key={t.tab}
                 onClick={() => nav.tab(t.tab)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] font-semibold ${active ? 'bg-rojo text-papel' : 'text-grafito hover:bg-carton/60'}`}
+                className={`flex items-center gap-3 rounded-md px-3 py-2.5 font-display text-[17px] uppercase tracking-wide ${active ? 'bg-rojo text-papel shadow-[0_2px_0_#6d0f0f] -rotate-1' : 'text-grafito hover:bg-carton/60'}`}
               >
                 <Icon name={t.icon} size={20} /> {t.label}
               </button>
@@ -84,9 +85,10 @@ function Shell() {
           Registrar obra
         </Button>
         <div className="mt-auto flex flex-col gap-2 text-xs text-gris">
+          <Skyline showTaxi={false} />
+          <p className="font-marker text-base leading-tight text-tinta">Teatro para vivir la ciudad</p>
           <DemoBadge label="Prototipo" />
           <p>Obras, teatros, funciones y personas de demostración. Sin venta de boletos.</p>
-          <p className="font-marker text-base text-tinta">Teatro para vivir la ciudad</p>
         </div>
       </aside>
 

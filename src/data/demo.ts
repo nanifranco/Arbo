@@ -42,8 +42,8 @@ export const venues: Venue[] = [
     neighborhood: 'Roma Norte',
     alcaldia: 'Cuauhtémoc',
     address: 'Calle Ejemplo 45, Roma Norte (dirección de demostración)',
-    x: 44,
-    y: 49,
+    x: 47,
+    y: 50,
     capacity: 240,
     founded: 1968,
     description:
@@ -57,8 +57,8 @@ export const venues: Venue[] = [
     neighborhood: 'Centro',
     alcaldia: 'Cuauhtémoc',
     address: 'Calle Ejemplo 8, Centro Histórico (dirección de demostración)',
-    x: 64,
-    y: 33,
+    x: 62,
+    y: 37,
     capacity: 60,
     founded: 2019,
     description:
@@ -87,8 +87,8 @@ export const venues: Venue[] = [
     neighborhood: 'Condesa',
     alcaldia: 'Cuauhtémoc',
     address: 'Calle Ejemplo 210, Condesa (dirección de demostración)',
-    x: 35,
-    y: 55,
+    x: 31,
+    y: 58,
     capacity: 180,
     founded: 2008,
     description:
@@ -102,8 +102,8 @@ export const venues: Venue[] = [
     neighborhood: 'Juárez',
     alcaldia: 'Cuauhtémoc',
     address: 'Calle Ejemplo 77, Juárez (dirección de demostración)',
-    x: 46,
-    y: 37,
+    x: 47,
+    y: 33,
     capacity: 320,
     founded: 1954,
     description:

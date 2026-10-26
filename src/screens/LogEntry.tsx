@@ -3,7 +3,7 @@ import { allProductions, currentSeason, fmt, getProduction, getVenue, searchAll,
 import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { Button, EmptyState, Field, inputCls, ScreenHeader, StarInput, StatusPill } from '../components/ui'
+import { Button, EmptyState, Field, inputCls, ScreenHeader, StarInput, Stars, StatusPill } from '../components/ui'
 
 const MAX = 1000
 
@@ -31,7 +31,7 @@ function PickProduction({ onPick }: { onPick: (id: string) => void }) {
   return (
     <div className="pb-10">
       <ScreenHeader title="Registrar una obra" />
-      <h1 className="font-marker text-3xl">¿Qué viste?</h1>
+      <h1 className="font-display text-[44px] uppercase leading-[0.9]">¿Qué viste?</h1>
       <p className="mt-1 text-sm text-gris">Incluye obras en cartelera y del archivo.</p>
       <div className="mt-4 flex items-center gap-2 rounded-full border border-linea bg-papel px-4 focus-within:border-tinta">
         <Icon name="search" size={18} className="text-gris" />
@@ -130,19 +130,46 @@ function Form({ productionId, entryId, onChangeProduction }: { productionId: str
     <div className="pb-10">
       <ScreenHeader title={entryId ? 'Editar entrada' : 'Registrar en el diario'} />
       <form onSubmit={submit} noValidate className="mx-auto flex max-w-xl flex-col gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-20 shrink-0 -rotate-2 overflow-hidden rounded-sm shadow-md">
-            <Poster production={p} showCompany={false} />
-          </div>
-          <div className="min-w-0">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
             <p className="eyebrow text-gris">{previous.length ? `La has visto ${previous.length} ${previous.length === 1 ? 'vez' : 'veces'} antes` : 'Primera vez'}</p>
-            <h1 className="font-marker text-[26px] leading-tight">{p.title}</h1>
-            <p className="text-sm text-gris">{p.company}</p>
-            {onChangeProduction && (
-              <button type="button" onClick={onChangeProduction} className="mt-1 text-[13px] font-semibold text-rojo hover:underline">
-                Cambiar obra
-              </button>
+            <h1 className="font-display text-[34px] uppercase leading-none">Tu boleto</h1>
+          </div>
+          {onChangeProduction && (
+            <button type="button" onClick={onChangeProduction} className="text-[13px] font-semibold text-rojo hover:underline">
+              Cambiar obra
+            </button>
+          )}
+        </div>
+
+        {/* Vista previa en vivo del boleto que se guardará */}
+        <div className="ticket flex overflow-hidden shadow-[0_14px_28px_-18px_rgba(0,0,0,.6)]" style={{ ['--notch' as string]: '72%' }} aria-label="Vista previa del boleto">
+          <div className="w-24 shrink-0 p-2.5">
+            <div className="-rotate-2 shadow-md">
+              <Poster production={p} showCompany={false} />
+            </div>
+          </div>
+          <div className="min-w-0 flex-1 py-3 pr-2">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-gris">Árbo · admite una persona</div>
+            <div className="mt-1 font-display text-[22px] uppercase leading-[1.02]">{p.title}</div>
+            <div className="mt-1 truncate text-xs text-gris">
+              {getVenue(p.seasons.find((x) => x.id === seasonId)?.venueId ?? '')?.name}
+              {place.trim() ? ` · ${place.trim()}` : ''}
+            </div>
+            <div className="mt-2">{rating ? <Stars value={rating} size={16} /> : <span className="font-hand text-lg leading-none text-gris">sin calificar todavía</span>}</div>
+          </div>
+          <div className="ticket-stub flex w-[28%] flex-col items-center justify-center bg-crema/60 px-2 text-center">
+            {date ? (
+              <>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gris">{fmt.weekday(date)}</span>
+                <span className="font-display text-[40px] leading-[0.9] tabular">{Number(date.slice(8, 10))}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest">{fmt.short(date).split(' ')[1]}</span>
+                <span className="font-mono text-[10px] text-gris">{date.slice(0, 4)}</span>
+              </>
+            ) : (
+              <span className="text-xs text-gris">Sin fecha</span>
             )}
+            {fav && <Icon name="heart" size={16} filled className="mt-1 text-rojo" />}
           </div>
         </div>
 

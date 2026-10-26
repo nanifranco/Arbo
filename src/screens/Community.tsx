@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { allCommunityReviews, allCommunityUsers, allProductions, currentSeason, getProduction, popularity, ratingStats } from '../lib/catalog'
 import { useNav, useStore } from '../lib/store'
 import { Icon } from '../components/Icon'
+import { HalftonePortrait } from '../components/deco'
 import { Poster } from '../components/Poster'
-import { Avatar, Button, CommunityScore, DemoBadge, EmptyState, SectionTitle } from '../components/ui'
+import { Button, CommunityScore, DemoBadge, EmptyState, SectionTitle } from '../components/ui'
 import { ReviewCard } from './ProductionDetail'
 
 type Tab = 'siguiendo' | 'populares' | 'personas'
@@ -26,14 +27,24 @@ export function Community() {
 
   return (
     <div className="flex flex-col gap-6 pb-10">
-      <header className="pt-3">
-        <h1 className="font-marker text-[32px] leading-none md:text-4xl">Comunidad</h1>
-        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gris">
-          Lo que la gente está viendo en los teatros de la ciudad. <DemoBadge label="Personas demo" />
-        </p>
+      <header className="wall relative -mx-4 overflow-hidden px-5 pb-6 pt-6 md:mx-0 md:rounded-2xl md:p-8">
+        <div className="relative z-10 max-w-[70%]">
+          <h1 className="font-display text-[48px] uppercase leading-[0.88] md:text-[64px]">Comunidad</h1>
+          <p className="mt-2 text-[15px] text-grafito">Lo que la gente está viendo, sintiendo y recomendando en los teatros de la ciudad.</p>
+          <div className="mt-3">
+            <DemoBadge label="Personas demo" />
+          </div>
+        </div>
+        <div className="absolute -right-2 top-3 flex w-[34%] max-w-[220px] flex-wrap justify-end gap-1" aria-hidden="true">
+          {allCommunityUsers().map((u, i) => (
+            <span key={u.id} className="w-[30%] bg-papel p-1 shadow-md" style={{ rotate: `${((i * 5) % 7) - 3}deg` }}>
+              <HalftonePortrait seed={u.handle} bg={u.color} ink={u.color === '#E9B321' || u.color === '#E76F91' ? '#191919' : '#F6E3A8'} />
+            </span>
+          ))}
+        </div>
       </header>
 
-      <div className="flex gap-1 border-b border-linea" role="tablist">
+      <div className="no-scrollbar flex gap-1 overflow-x-auto border-b-2 border-tinta" role="tablist">
         {(
           [
             ['siguiendo', 'Siguiendo'],
@@ -46,7 +57,7 @@ export function Community() {
             role="tab"
             aria-selected={tab === t}
             onClick={() => setTab(t)}
-            className={`-mb-px border-b-[3px] px-3 py-2.5 text-sm font-semibold ${tab === t ? 'border-rojo' : 'border-transparent text-gris hover:text-tinta'}`}
+            className={`-mb-[2px] shrink-0 rounded-t-md px-4 py-2.5 font-display text-[16px] uppercase tracking-wide ${tab === t ? 'bg-tinta text-papel' : 'text-grafito hover:text-tinta'}`}
           >
             {l}
           </button>
@@ -58,7 +69,7 @@ export function Community() {
           <EmptyState icon="community" title="Aún no sigues a nadie" text="Sigue a personas con gustos parecidos a los tuyos para ver aquí sus funciones y reseñas." action="Encontrar personas" onAction={() => setTab('personas')} />
         ) : (
           <div className="grid gap-6 md:grid-cols-[1.5fr_1fr]">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {feed.map((r) => (
                 <ReviewCard key={r.id} r={r} showProduction />
               ))}
@@ -72,8 +83,8 @@ export function Community() {
                     const who = feed.filter((r) => r.productionId === id && r.rating >= 4)
                     return (
                       <li key={id}>
-                        <button onClick={() => nav.go({ name: 'production', id })} className="flex w-full items-center gap-3 rounded-xl border border-linea bg-papel p-3 text-left hover:border-grafito">
-                          <span className="w-11 shrink-0 overflow-hidden rounded-sm">
+                        <button onClick={() => nav.go({ name: 'production', id })} className="paper flex w-full items-center gap-3 p-3 text-left hover:-translate-y-0.5 transition-transform">
+                          <span className="w-12 shrink-0 -rotate-2 shadow">
                             <Poster production={p} showCompany={false} />
                           </span>
                           <span className="min-w-0 flex-1">
@@ -97,25 +108,25 @@ export function Community() {
       {tab === 'populares' && <Popular />}
 
       {tab === 'personas' && (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {allCommunityUsers().map((u) => {
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
+          {allCommunityUsers().map((u, i) => {
             const following = store.follows.includes(u.id)
             const count = reviews.filter((r) => r.userId === u.id).length
             return (
-              <div key={u.id} className="flex items-center gap-3 rounded-xl border border-linea bg-papel p-3">
-                <button onClick={() => nav.go({ name: 'profile', userId: u.id })} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                  <Avatar name={u.name} color={u.color} size={46} />
-                  <span className="min-w-0">
-                    <span className="block truncate font-bold hover:underline">{u.name}</span>
-                    <span className="block truncate text-xs text-gris">{u.bio}</span>
-                    <span className="block text-[11px] text-gris tabular">
-                      {count} reseñas · {u.followers + (following ? 1 : 0)} seguidores
-                    </span>
+              <div key={u.id} className="flex flex-col bg-papel p-2 pb-3 shadow-[0_12px_20px_-14px_rgba(0,0,0,.6)]" style={{ rotate: `${((i % 3) - 1) * 1.2}deg` }}>
+                <button onClick={() => nav.go({ name: 'profile', userId: u.id })} className="text-left">
+                  <HalftonePortrait seed={u.handle} bg={u.color} ink={u.color === '#E9B321' || u.color === '#E76F91' ? '#191919' : '#F6E3A8'} label={u.name} />
+                  <span className="mt-2 block font-display text-[19px] uppercase leading-none hover:underline">{u.name}</span>
+                  <span className="mt-0.5 block font-mono text-[11px] text-gris">@{u.handle}</span>
+                  <span className="mt-1.5 block font-hand text-[16px] leading-[1.1] text-grafito">{u.bio}</span>
+                  <span className="mt-1.5 block text-[11px] text-gris tabular">
+                    {count} reseñas · {u.followers + (following ? 1 : 0)} seguidores
                   </span>
                 </button>
                 <Button
                   variant={following ? 'secondary' : 'ink'}
-                  className="!min-h-9 !px-3 !text-[13px]"
+                  icon={following ? 'check' : 'plus'}
+                  className="mt-3 !min-h-9 !px-3 !text-[13px]"
                   onClick={() => {
                     const now = store.toggleFollow(u.id)
                     store.notify(now ? `Ahora sigues a ${u.name.split(' ')[0]}` : `Dejaste de seguir a ${u.name.split(' ')[0]}`, now ? 'ok' : 'info')
@@ -143,12 +154,12 @@ function Popular() {
     <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
       <section>
         <SectionTitle>Las más vistas</SectionTitle>
-        <ol className="grid grid-cols-3 gap-3">
+        <ol className="wall grid grid-cols-3 gap-4 rounded-xl p-4 pt-6">
           {top.map((p, i) => (
             <li key={p.id}>
               <button onClick={() => nav.go({ name: 'production', id: p.id })} className="relative block w-full text-left">
-                <span className="absolute -left-1.5 -top-2 z-10 grid size-7 place-items-center rounded-full bg-amarillo font-slab text-sm text-tinta shadow">{i + 1}</span>
-                <span className="block overflow-hidden rounded-md shadow-[0_6px_14px_-8px_rgba(25,25,25,.45)]">
+                <span className="absolute -left-3 -top-4 z-10 font-display text-[44px] leading-none text-rojo [text-shadow:2px_2px_0_#FBF8F2]">{i + 1}</span>
+                <span className="block overflow-hidden rounded-[3px] shadow-[0_10px_16px_-10px_rgba(25,25,25,.6)]">
                   <Poster production={p} showCompany={false} />
                 </span>
                 <span className="mt-1.5 block truncate text-xs font-bold">{p.title}</span>

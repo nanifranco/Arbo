@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 import {
+  addDays,
+  DAY_NAMES,
+  performancesOn,
   ALL_GENRES,
   allProductions,
   allVenues,
@@ -18,6 +21,7 @@ import { useNav } from '../lib/store'
 import type { Production } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
+import { Facade, FACADE, HandNote } from '../components/deco'
 import { Avatar, Button, Chip, CommunityScore, DemoBadge, EmptyState, Sheet, StatusPill } from '../components/ui'
 
 type DateFilter = 'any' | 'today' | 'weekend' | 'week'
@@ -62,6 +66,7 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
   const [q, setQ] = useState(initialQuery)
   const [f, setF] = useState<Filters>({ ...DEFAULTS, genres: initialGenre ? [initialGenre] : [] })
   const [sheet, setSheet] = useState(false)
+  const [view, setView] = useState<'carteles' | 'semana'>('carteles')
 
   const results = useMemo(() => searchAll(q), [q])
   const alcaldias = [...new Set(allVenues().map((v) => v.alcaldia))]
@@ -103,7 +108,14 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
 
   return (
     <div className="flex flex-col gap-4 pb-8">
-      <h1 className="pt-3 font-marker text-[32px] leading-none md:text-4xl">Buscar</h1>
+      <div className="flex items-end justify-between gap-3 pt-3">
+        <h1 className="font-display text-[44px] uppercase leading-[0.9] md:text-[56px]">
+          {tab === 'teatros' ? 'Teatros' : tab === 'archivo' ? 'Archivo' : 'Cartelera'}
+        </h1>
+        <HandNote className="mb-1 text-[20px]" arrow="left">
+          {tab === 'teatros' ? 'los foros de la ciudad' : tab === 'archivo' ? 'lo que ya pasó' : 'todo lo que hay'}
+        </HandNote>
+      </div>
 
       <div className="sticky top-[env(safe-area-inset-top,0px)] z-20 -mx-4 bg-crema/95 px-4 pb-2 pt-1 backdrop-blur md:mx-0 md:px-0">
         <label htmlFor="search" className="sr-only">
@@ -181,7 +193,16 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
                 <b className="tabular text-tinta">{list.length}</b> {list.length === 1 ? 'obra' : 'obras'}
                 {tab === 'archivo' ? ' en el archivo' : ''}
               </span>
-              <label className="flex items-center gap-1.5">
+              {tab === 'cartelera' && (
+                <div className="ml-auto mr-3 flex rounded-full border border-linea bg-papel p-0.5" role="group" aria-label="Vista">
+                  {(['carteles', 'semana'] as const).map((v) => (
+                    <button key={v} onClick={() => setView(v)} aria-pressed={view === v} className={`rounded-full px-3 py-1 text-[12px] font-bold capitalize ${view === v ? 'bg-tinta text-papel' : 'text-grafito'}`}>
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <label className={`flex items-center gap-1.5 ${tab === 'cartelera' && view === 'semana' ? 'hidden' : ''}`}>
                 <span className="text-gris">Ordenar</span>
                 <select id="sort" value={f.sort} onChange={(e) => setF({ ...f, sort: e.target.value as Sort })} className="rounded-md border border-linea bg-papel px-2 py-1 font-semibold">
                   {(Object.keys(SORT_LABEL) as Sort[])
@@ -209,8 +230,10 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
               action="Quitar filtros"
               onAction={() => setF({ ...DEFAULTS })}
             />
+          ) : tab === 'cartelera' && view === 'semana' ? (
+            <WeekView ids={list.map((p) => p.id)} />
           ) : (
-            <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
               {list.map((p) => (
                 <ResultCard key={p.id} p={p} />
               ))}
@@ -308,7 +331,7 @@ function ResultCard({ p }: { p: Production }) {
   const r = ratingStats(p.id)
   return (
     <button onClick={() => nav.go({ name: 'production', id: p.id })} className="group flex flex-col text-left">
-      <div className="relative overflow-hidden rounded-md shadow-[0_6px_14px_-8px_rgba(25,25,25,.45)] transition-transform group-hover:-translate-y-0.5">
+      <div className="poster-lift relative overflow-hidden rounded-[3px] shadow-[0_12px_20px_-12px_rgba(25,25,25,.6)]">
         <Poster production={p} />
         {status !== 'cartelera' && (
           <div className="absolute left-1.5 top-1.5">
@@ -410,30 +433,33 @@ function SearchResults({ r }: { r: ReturnType<typeof searchAll> }) {
 function VenueList() {
   const nav = useNav()
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {allVenues().map((v) => {
+    <div className="grid gap-5 sm:grid-cols-2">
+      {allVenues().map((v, i) => {
         const { cartelera } = productionsAtVenue(v.id)
         return (
-          <button key={v.id} onClick={() => nav.go({ name: 'venue', id: v.id })} className="flex flex-col overflow-hidden rounded-xl border border-linea bg-papel text-left hover:border-grafito">
-            <VenueSign venue={v} />
-            <div className="flex items-center justify-between gap-2 p-3">
+          <button key={v.id} onClick={() => nav.go({ name: 'venue', id: v.id })} className="paper group flex flex-col overflow-hidden !p-0 text-left" style={{ rotate: `${((i % 3) - 1) * 0.5}deg` }}>
+            <div className="wall px-4 pt-4 transition-transform">
+              <Facade name={v.name} color={v.color} style={FACADE[v.id] ?? 'bodega'} />
+            </div>
+            <div className="flex items-center justify-between gap-3 p-4">
               <div className="min-w-0">
-                <div className="truncate text-xs text-gris">
-                  {v.neighborhood} · {v.alcaldia}
+                <div className="font-display text-[22px] uppercase leading-none">{v.name}</div>
+                <div className="mt-1 truncate text-xs text-gris">
+                  {v.neighborhood} · {v.alcaldia} · {v.capacity} butacas
                 </div>
-                <div className="mt-0.5 text-[13px]">
+                <div className="mt-1.5 text-[13px]">
                   {cartelera.length ? (
-                    <>
-                      <b className="tabular">{cartelera.length}</b> {cartelera.length === 1 ? 'obra' : 'obras'} en cartelera
-                    </>
+                    <span className="font-semibold text-rojo">
+                      {cartelera.length} {cartelera.length === 1 ? 'obra' : 'obras'} en cartelera
+                    </span>
                   ) : (
                     <span className="text-gris">Sin funciones por ahora</span>
                   )}
                 </div>
               </div>
-              <div className="flex -space-x-3">
-                {cartelera.slice(0, 3).map((c) => (
-                  <span key={c.production.id} className="w-8 overflow-hidden rounded-sm border-2 border-papel">
+              <div className="flex -space-x-4">
+                {cartelera.slice(0, 3).map((c, k) => (
+                  <span key={c.production.id} className="w-10 border-2 border-papel shadow" style={{ rotate: `${(k - 1) * 6}deg` }}>
                     <Poster production={c.production} showCompany={false} />
                   </span>
                 ))}
@@ -445,6 +471,45 @@ function VenueList() {
       <p className="text-xs text-gris sm:col-span-2">
         <DemoBadge className="mr-1" /> Recintos ficticios ubicados en colonias reales para el prototipo.
       </p>
+    </div>
+  )
+}
+
+/** Vista de semana: funciones de los próximos 7 días por columna */
+function WeekView({ ids }: { ids: string[] }) {
+  const nav = useNav()
+  const days = Array.from({ length: 7 }, (_, i) => addDays(TODAY, i))
+  return (
+    <div className="no-scrollbar -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+      <div className="grid min-w-[980px] grid-cols-7 gap-2 lg:min-w-0">
+        {days.map((d, i) => {
+          const perfs = performancesOn(d).filter((x) => ids.includes(x.production.id))
+          return (
+            <div key={i} className={`flex flex-col gap-2 rounded-lg p-2 ${i === 0 ? 'bg-amarillo-claro/60' : 'wall'}`}>
+              <div className="flex items-baseline justify-between border-b-2 border-tinta pb-1">
+                <span className="font-display text-lg uppercase leading-none">{i === 0 ? 'Hoy' : DAY_NAMES[d.getDay()].slice(0, 3)}</span>
+                <span className="font-display text-2xl leading-none tabular">{d.getDate()}</span>
+              </div>
+              {perfs.length === 0 ? (
+                <p className="py-4 text-center font-hand text-lg text-gris">descanso</p>
+              ) : (
+                perfs.map((pf) => (
+                  <button
+                    key={pf.production.id + pf.time}
+                    onClick={() => nav.go({ name: 'production', id: pf.production.id })}
+                    className="flex flex-col rounded-md bg-papel p-2 text-left shadow-sm hover:ring-1 hover:ring-tinta"
+                    style={{ borderTop: `4px solid ${pf.production.poster.bg}` }}
+                  >
+                    <span className="font-mono text-[12px] font-bold text-rojo">{pf.time}</span>
+                    <span className="line-clamp-2 text-[12.5px] font-bold leading-tight">{pf.production.title}</span>
+                    <span className="mt-0.5 truncate text-[11px] text-gris">{pf.venue.name}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
