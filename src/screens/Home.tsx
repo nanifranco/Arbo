@@ -237,7 +237,6 @@ export function Home() {
 
 // ——— Esta noche: funciones del día en una línea de tiempo ———
 
-const START_H = 11
 const END_H = 24
 const PX_PER_H = 96
 
@@ -247,6 +246,8 @@ function Tonight() {
   const firstWithShows = Math.max(0, days.findIndex((d) => d.perfs.length > 0))
   const [sel, setSel] = useState(firstWithShows)
   const day = days[sel]
+  // la línea de tiempo empieza una hora antes de la primera función del día
+  const START_H = Math.max(10, Math.min(19, ...day.perfs.map((p) => Number(p.time.slice(0, 2)))) - 1)
   const now = new Date()
   const nowH = now.getHours() + now.getMinutes() / 60
 
