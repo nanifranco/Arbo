@@ -26,7 +26,8 @@ import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
 import { CITY_PHOTOS } from '../data/demo'
-import { Marquee } from '../components/deco'
+import { Marquee, Tape } from '../components/deco'
+import { PosterWall } from './Welcome'
 import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
 export function Home() {
@@ -42,7 +43,6 @@ export function Home() {
   const nextShows = upcomingPerformances(fs.season, 3)
   const closing = closingSoon(35)
   const firstName = user?.name.split(' ')[0]
-  const wallPosters = cartelera.filter((p) => p.id !== featured.id).slice(0, 3)
 
   return (
     <div className="flex flex-col gap-12 pb-6">
@@ -53,45 +53,40 @@ export function Home() {
         </span>
       </header>
 
-      {/* ——— Héroe: foto de escena de la obra destacada ——— */}
+      {/* ——— Héroe: collage de carteles detrás, obra destacada al frente ——— */}
       <section aria-labelledby="destacada" className="-mx-4 md:mx-0">
         <div className="relative overflow-hidden md:rounded-2xl">
-          <Photo id={featured.photos?.[0]} alt={`Escena de referencia para ${featured.title}`} w={1600} className="h-[560px] md:h-[520px]" grade="warm" fallback={<div className="absolute inset-0" style={{ background: featured.poster.bg }} />}>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 grid gap-6 p-5 md:grid-cols-[1fr_auto] md:items-end md:p-10">
-              <div className="max-w-2xl text-papel">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-sm bg-rojo px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest">Destacada de la semana</span>
-                  <DemoBadge className="!border-papel/60 !text-papel" />
-                </div>
-                <h1 id="destacada" className="mt-3 font-marker text-[42px] leading-[0.98] md:text-[64px]">
-                  {featured.title}
-                </h1>
-                <p className="mt-2 text-[14px] text-papel/80">
-                  {featured.company} · {featured.genres.join(' / ')} · {fv.name}, {fv.neighborhood}
-                </p>
-                <p className="mt-3 line-clamp-2 max-w-xl text-[15px] leading-relaxed text-papel/90 md:line-clamp-3">{featured.synopsis}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {nextShows.map((s) => (
-                    <span key={s.date + s.time} className="rounded border border-papel/35 bg-black/30 px-2.5 py-1 font-mono text-[12px] font-bold backdrop-blur-sm">
-                      {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-amarillo">{s.time}</span>
-                    </span>
-                  ))}
-                </div>
-                <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="mt-5 inline-flex items-center gap-2 rounded-full bg-rojo px-6 py-3 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
-                  Ver obra y funciones <Icon name="arrow" size={16} />
-                </button>
+          <PosterWall />
+          <div className="relative grid gap-6 px-4 py-8 md:grid-cols-[minmax(0,1fr)_200px] md:items-center md:px-10 md:py-12">
+            <div className="paper relative max-w-xl -rotate-[0.6deg] p-5 shadow-[0_30px_60px_-24px_rgba(0,0,0,.75)] md:p-7">
+              <Tape />
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-sm bg-rojo px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest text-papel">Destacada de la semana</span>
+                <DemoBadge />
               </div>
-              <div className="hidden gap-3 md:flex">
-                {wallPosters.slice(0, 2).map((p, i) => (
-                  <button key={p.id} onClick={() => nav.go({ name: 'production', id: p.id })} className="w-[120px] shadow-[0_16px_30px_-12px_rgba(0,0,0,.9)] transition-transform hover:-translate-y-1" style={{ rotate: `${i ? 3 : -2}deg` }} aria-label={`Ver ${p.title}`}>
-                    <Poster production={p} />
-                  </button>
+              <h1 id="destacada" className="mt-3 font-marker text-[36px] leading-[0.98] md:text-[52px]">
+                {featured.title}
+              </h1>
+              <p className="mt-2 text-[13.5px] text-gris">
+                {featured.company} · {featured.genres.join(' / ')} · {fv.name}, {fv.neighborhood}
+              </p>
+              <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-grafito">{featured.synopsis}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {nextShows.map((s) => (
+                  <span key={s.date + s.time} className="ticket px-2.5 py-1 font-mono text-[12px] font-bold" style={{ ['--notch' as string]: '50%' }}>
+                    {fmt.weekday(s.date).toUpperCase()} {fmt.dayMonth(s.date)} · <span className="text-rojo">{s.time}</span>
+                  </span>
                 ))}
               </div>
+              <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="mt-5 inline-flex items-center gap-2 rounded-full bg-rojo px-6 py-3 text-sm font-bold text-papel shadow-[0_2px_0_#6d0f0f] hover:bg-rojo-hondo">
+                Ver obra y funciones <Icon name="arrow" size={16} />
+              </button>
             </div>
-          </Photo>
+            <button onClick={() => nav.go({ name: 'production', id: featured.id })} className="relative mx-auto hidden w-[200px] rotate-2 shadow-[0_26px_44px_-16px_rgba(0,0,0,.85)] transition-transform hover:-translate-y-1 md:block" aria-label={`Ver ${featured.title}`}>
+              <Poster production={featured} />
+              <Tape tone="clear" />
+            </button>
+          </div>
         </div>
         <Marquee items={['Obras', 'Gente', 'Espacios', 'Historias', 'CDMX', 'Teatro para vivir la ciudad']} />
       </section>
