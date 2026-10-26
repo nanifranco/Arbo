@@ -11,7 +11,7 @@ for (const [w, h, tag] of [[390, 844, 'm'], [1280, 860, 'd']]) {
   await pg.getByText('Entrar con perfil de demostración').click()
   await pg.waitForTimeout(3000)
   await pg.screenshot({ path: `shots/${tag}1-home.png`, fullPage: true })
-  await pg.locator('main button:has-text("Ver obra")').first().click()
+  await pg.locator('main button:has-text("Ver funciones y boletos")').first().click()
   await pg.waitForTimeout(3000)
   await pg.screenshot({ path: `shots/${tag}2-detail.png`, fullPage: true })
   const nav = tag === 'm' ? pg.locator('nav[aria-label=Principal]').last() : pg.locator('aside nav')
