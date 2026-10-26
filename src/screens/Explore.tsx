@@ -24,6 +24,7 @@ import { Poster } from '../components/Poster'
 import { Facade, FACADE } from '../components/deco'
 import { Photo } from '../components/Photo'
 import { MetroChip } from '../components/broadway'
+import { StationSign, VenuePictogram } from '../components/urban'
 import { Avatar, Button, Chip, CommunityScore, DemoBadge, EmptyState, Sheet, StatusPill } from '../components/ui'
 
 type DateFilter = 'any' | 'today' | 'weekend' | 'week'
@@ -111,10 +112,8 @@ export function Explore({ initialTab = 'cartelera', initialQuery = '', initialGe
   return (
     <div className="flex flex-col gap-4 pb-8">
       <div className="flex items-end justify-between gap-3 pt-3">
-        <h1 className="font-display text-[44px] uppercase leading-[0.9] md:text-[56px]">
-          {tab === 'teatros' ? 'Teatros' : tab === 'archivo' ? 'Archivo' : 'Cartelera'}
-        </h1>
-        <span className="mb-1 hidden text-sm text-gris sm:block">{tab === 'teatros' ? 'Los foros de la ciudad' : tab === 'archivo' ? 'Temporadas que ya terminaron' : 'Todo lo que hay en la ciudad'}</span>
+        <h1 className="sr-only">{tab === 'teatros' ? 'Teatros' : tab === 'archivo' ? 'Archivo' : 'Cartelera'}</h1>
+        <StationSign className="w-full" title={tab === 'teatros' ? 'Teatros' : tab === 'archivo' ? 'Archivo' : 'Cartelera'} subtitle={tab === 'teatros' ? 'Los foros de la ciudad' : tab === 'archivo' ? 'Temporadas que ya terminaron' : 'Todo lo que hay en la ciudad'} />
       </div>
 
       <div className="sticky top-[env(safe-area-inset-top,0px)] z-20 -mx-4 bg-crema/95 px-4 pb-2 pt-1 backdrop-blur md:mx-0 md:px-0">
@@ -446,7 +445,10 @@ function VenueList() {
             </Photo>
             <div className="flex items-center justify-between gap-3 p-4">
               <div className="min-w-0">
-                <div className="font-display text-[22px] uppercase leading-none">{v.name}</div>
+                <div className="flex items-center gap-2">
+                  <VenuePictogram venue={v} size={28} />
+                  <div className="font-display text-[22px] uppercase leading-none">{v.name}</div>
+                </div>
                 <div className="mt-1 truncate text-xs text-gris">
                   {v.neighborhood} · {v.alcaldia} · {v.capacity} butacas
                 </div>

@@ -23,11 +23,11 @@ import { useNav, useStore } from '../lib/store'
 import type { PosterMotif } from '../data/types'
 import { Icon } from '../components/Icon'
 import { Poster } from '../components/Poster'
-import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
 import { CITY_PHOTOS } from '../data/demo'
 import { Marquee } from '../components/deco'
 import { Laurel, MarqueeSign, MetroChip, Neon } from '../components/broadway'
+import { Awning, TheaterRoute } from '../components/urban'
 import { PosterWall } from './Welcome'
 import { Avatar, CommunityScore, DemoBadge, GenreTag, Logo, PosterCard, SectionTitle, Stars } from '../components/ui'
 
@@ -137,7 +137,10 @@ export function Home() {
         <SectionTitle id="cartelera" eyebrow={`${cartelera.length} obras en temporada`} action="Toda la cartelera" onAction={() => nav.go({ name: 'explore', tab: 'cartelera' })}>
           En cartelera
         </SectionTitle>
-        <div className="wall no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-5 pb-6 pt-7 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:rounded-xl md:px-6">
+        <div className="-mx-4 md:mx-0">
+          <Awning label="Puesto de cartelera" />
+        </div>
+        <div className="wall no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-5 pb-6 pt-5 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:rounded-b-xl md:px-6">
           {cartelera.slice(0, 10).map((p) => (
             <PosterCard key={p.id} production={p} width="w-[168px] md:w-auto" />
           ))}
@@ -151,25 +154,18 @@ export function Home() {
         <Ranking />
         {/* Mapa */}
         <section aria-labelledby="cerca">
-          <SectionTitle id="cerca" action="Abrir mapa" onAction={() => nav.go({ name: 'map' })}>
+          <SectionTitle id="cerca" eyebrow="Toca una estación" action="Abrir mapa" onAction={() => nav.go({ name: 'map' })}>
             La ciudad es teatro
           </SectionTitle>
-          <button onClick={() => nav.go({ name: 'map' })} className="paper group relative block w-full overflow-hidden !p-0 text-left" aria-label="Abrir mapa de teatros">
-            <svg viewBox="8 14 80 80" className="block h-auto w-full" aria-hidden="true">
-              <CityMapBase labels={false} />
-              {allVenues().map((v) => (
-                <g key={v.id} transform={`translate(${v.x} ${v.y})`}>
-                  <path d="M0 0 C-2.6 -3.2 -3.2 -4.6 -3.2 -5.8 A3.2 3.2 0 0 1 3.2 -5.8 C3.2 -4.6 2.6 -3.2 0 0z" fill={v.color} stroke="#FBF8F2" strokeWidth=".5" />
-                </g>
-              ))}
-            </svg>
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-lg bg-papel/95 px-3 py-2 text-sm shadow">
+          <div className="paper overflow-hidden p-2">
+            <TheaterRoute compact venues={allVenues()} onSelect={(id) => nav.go({ name: 'venue', id })} />
+            <button onClick={() => nav.go({ name: 'map' })} className="mt-1 flex w-full items-center justify-between rounded-md bg-[#20242b] px-3 py-2 text-left text-sm text-papel">
               <span>
-                <b className="tabular">{allVenues().length}</b> teatros · <span className="text-gris">Centro, Roma, Coyoacán…</span>
+                <b className="font-sign text-[13px] uppercase">Ruta Teatral</b> <span className="text-papel/70">· {allVenues().length} estaciones</span>
               </span>
-              <Icon name="arrow" size={18} className="text-rojo" />
-            </div>
-          </button>
+              <Icon name="arrow" size={18} />
+            </button>
+          </div>
         </section>
       </div>
 

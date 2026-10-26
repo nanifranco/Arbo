@@ -18,6 +18,7 @@ import { Poster } from '../components/Poster'
 import { CityMapBase } from '../components/CityMap'
 import { Photo } from '../components/Photo'
 import { MetroChip, StreetPlate } from '../components/broadway'
+import { StationSign, TheaterRoute, VenuePictogram } from '../components/urban'
 import { Facade, FACADE, HalftonePortrait, SeatMap, Stamp, Tape } from '../components/deco'
 import { Chip, DemoBadge, EmptyState, PosterCard, ScreenHeader, SectionTitle, StatusPill } from '../components/ui'
 
@@ -184,7 +185,11 @@ export function VenueProfile({ id }: { id: string }) {
             </span>
             <DemoBadge className="!border-papel/60 !text-papel" />
           </div>
-          <h1 className="mt-3 font-playbill text-[46px] leading-[0.95] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[68px]">{v.name}</h1>
+          <div className="mt-4 flex items-center gap-3">
+            <VenuePictogram venue={v} size={52} />
+            <span className="font-sign text-[13px] uppercase tracking-wide text-papel/80">Estación {v.neighborhood}</span>
+          </div>
+          <h1 className="mt-2 font-playbill text-[46px] leading-[0.95] [text-shadow:0_2px_12px_rgba(0,0,0,.5)] md:text-[68px]">{v.name}</h1>
           <p className="mt-3 max-w-[58ch] text-[15.5px] leading-relaxed text-papel/90">{v.description}</p>
         </div>
       </header>
@@ -301,7 +306,8 @@ type MapFilter = 'todos' | 'cartelera' | 'finde'
 export function TheaterMap() {
   const nav = useNav()
   const [filter, setFilter] = useState<MapFilter>('cartelera')
-  const [selected, setSelected] = useState<string>('teatro-jacaranda')
+  const [selected, setSelected] = useState<string>('gran-teatro-reforma')
+  const [view, setView] = useState<'ruta' | 'mapa'>('ruta')
   const weekendVenues = useMemo(() => {
     const d = TODAY.getDay()
     const toFri = d === 0 ? -2 : d === 6 ? -1 : 5 - d
@@ -316,8 +322,20 @@ export function TheaterMap() {
   return (
     <div className="flex flex-col gap-5 pb-10">
       <ScreenHeader title="Mapa de teatros" sub="Ciudad de México" />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="font-display text-[44px] uppercase leading-[0.9]">La ciudad es teatro</h1>
+      <StationSign title="Ruta Teatral" subtitle="Los teatros de la ciudad como estaciones" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-full border border-linea bg-papel p-0.5" role="group" aria-label="Vista">
+          {(
+            [
+              ['ruta', 'Diagrama'],
+              ['mapa', 'Mapa'],
+            ] as const
+          ).map(([k, l]) => (
+            <button key={k} onClick={() => setView(k)} aria-pressed={view === k} className={`rounded-full px-4 py-1.5 text-[13px] font-bold ${view === k ? 'bg-tinta text-papel' : 'text-grafito'}`}>
+              {l}
+            </button>
+          ))}
+        </div>
         <span className="text-sm text-gris">Toca un teatro para ver su cartelera</span>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -333,7 +351,13 @@ export function TheaterMap() {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
-        <div className="paper relative overflow-hidden !p-0">
+        {view === 'ruta' ? (
+          <div className="paper relative min-w-0 overflow-hidden p-3">
+            <TheaterRoute venues={venues} onSelect={setSelected} selected={sel?.id} />
+            <p className="mt-2 px-1 text-[11px] text-gris">Diagrama esquemático inventado para el prototipo: no es el mapa del Metro ni muestra rutas reales.</p>
+          </div>
+        ) : (
+          <div className="paper relative overflow-hidden !p-0">
           <svg viewBox="2 4 92 96" className="block h-auto w-full" role="group" aria-label="Mapa ilustrativo de teatros">
             <CityMapBase />
             {venues.map((v) => {
@@ -373,6 +397,7 @@ export function TheaterMap() {
             <span>El número en cada pin = obras en cartelera.</span>
           </div>
         </div>
+        )}
 
         <div className="flex flex-col gap-4">
           {sel && selAt ? (
@@ -380,7 +405,10 @@ export function TheaterMap() {
               <Photo id={sel.photo} alt={`Foto de referencia de ${sel.name}`} w={800} className="aspect-[16/9]" fallback={<div className="wall absolute inset-0 px-4 pt-4"><Facade name={sel.name} color={sel.color} style={FACADE[sel.id] ?? 'bodega'} /></div>} />
               <div className="flex flex-col gap-3 p-4">
                 <div>
-                  <div className="font-display text-[26px] uppercase leading-none">{sel.name}</div>
+                  <div className="flex items-center gap-2.5">
+                    <VenuePictogram venue={sel} size={34} />
+                    <div className="font-display text-[26px] uppercase leading-none">{sel.name}</div>
+                  </div>
                   <p className="mt-1 text-sm text-grafito">
                     {sel.neighborhood}, {sel.alcaldia} · {sel.capacity} butacas
                   </p>
@@ -416,7 +444,7 @@ export function TheaterMap() {
             {venues.map((v) => (
               <li key={v.id} className="border-b border-dashed border-linea last:border-0">
                 <button onClick={() => setSelected(v.id)} aria-pressed={sel?.id === v.id} className={`flex w-full items-center gap-3 px-3 py-2.5 text-left ${sel?.id === v.id ? 'bg-amarillo-claro/70' : 'hover:bg-crema'}`}>
-                  <span className="size-3 shrink-0 rounded-full border border-tinta/30" style={{ background: v.color }} />
+                  <VenuePictogram venue={v} size={24} />
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold">{v.name}</span>
                   <span className="text-xs text-gris">{v.neighborhood}</span>
                 </button>
